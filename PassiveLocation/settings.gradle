@@ -1,0 +1,3 @@
+rootProject.name='PassiveLocation'
+include ':app'
+include ':bluetoothSockte_Pda'
