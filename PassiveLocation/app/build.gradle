@@ -11,6 +11,7 @@ android {
         targetSdkVersion 28
         versionCode 1
         versionName "1.0.0"
+        useLibrary 'org.apache.http.legacy'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -61,7 +62,6 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.2.0'
     //fresco
     implementation 'com.facebook.fresco:fresco:1.11.0'
-    implementation 'com.facebook.fresco:animated-gif:1.11.0'
     //greenDao
     implementation 'org.greenrobot:greendao:3.3.0'
     //rv侧滑

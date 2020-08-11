@@ -1,4 +1,4 @@
-package com.synway.passive.location.utils;
+package com.synway.passive.location.greendao;
 
 
 import com.synway.passive.location.application.MyApplication;

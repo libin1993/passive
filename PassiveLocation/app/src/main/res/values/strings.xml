@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">PassiveLocation</string>
+    <string name="account_rule">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
+    <string name="number_rule">0123456789</string>
 </resources>

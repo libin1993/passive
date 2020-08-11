@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 底部圆角,参数是固定的 -->
+    <item
+        android:gravity="bottom|center_horizontal">
+        <shape>
+            <solid android:color="@android:color/holo_red_light" />
+            <corners android:radius="3dp" />
+            <size android:width="50dp"
+                android:height="6dp"/>
+        </shape>
+    </item>
+</layer-list>

@@ -3,8 +3,7 @@ package com.synway.passive.location.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentTransaction;
-import android.view.ViewGroup;
+
 
 
 import com.synway.passive.location.base.BaseFragment;
@@ -19,14 +18,13 @@ import java.util.List;
 public class MainTabLayoutAdapter extends FragmentPagerAdapter {
     private List<Fragment> fragmentList;
     private List<String> mTitles;
-    private FragmentManager fm;
 
 
     public MainTabLayoutAdapter(FragmentManager fm, List<Fragment> list, List<String> titles) {
         super(fm);
         this.fragmentList = list;
         this.mTitles = titles;
-        this.fm = fm;
+
     }
 
     @Override

@@ -41,6 +41,7 @@ public class BluetoothReceiver extends BroadcastReceiver {
                     break;
 
                 case BluetoothDevice.ACTION_ACL_CONNECTED:
+                    DeviceStatus.deviceStatus = DeviceStatus.BLUETOOTH_CONNECTED;
                     EventBus.getDefault().post(new BluetoothStatus(DeviceStatus.BLUETOOTH_CONNECTED));
                     break;
 

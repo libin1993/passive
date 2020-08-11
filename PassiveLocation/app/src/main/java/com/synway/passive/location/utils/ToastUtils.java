@@ -3,6 +3,7 @@ package com.synway.passive.location.utils;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -50,9 +51,9 @@ public class ToastUtils {
             return;
         }
 
+
         if (mToast == null) {
-            mToast = Toast.makeText(MyApplication.getInstance().getApplicationContext(), msg, Toast.LENGTH_SHORT);
-            mToast.setGravity(Gravity.CENTER, 0, 0);
+            mToast = Toast.makeText(MyApplication.getInstance(), msg, Toast.LENGTH_SHORT);
         } else {
             mToast.setText(msg);
         }
@@ -64,6 +65,7 @@ public class ToastUtils {
             return;
         }
         mToast.show();
+
     }
 
 

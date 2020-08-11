@@ -1,5 +1,10 @@
 package com.synway.passive.location.utils;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 
 import com.synway.passive.location.application.MyApplication;
@@ -73,7 +78,7 @@ public class FormatUtils {
      * @param str
      * @return 判断设备号是否正确
      */
-    public boolean isEquipNo(String str){
+    public boolean isEquipNo(String str) {
         if (TextUtils.isEmpty(str)) {
             return false;
         }
@@ -200,7 +205,7 @@ public class FormatUtils {
     /**
      * 把byte转为字符串的bit
      */
-    public  String byteToBit(byte b) {
+    public String byteToBit(byte b) {
         return ""
                 + (byte) ((b >> 7) & 0x1) + (byte) ((b >> 6) & 0x1)
                 + (byte) ((b >> 5) & 0x1) + (byte) ((b >> 4) & 0x1)
@@ -251,16 +256,14 @@ public class FormatUtils {
     }
 
 
-
-
     /**
      * 字节转十六进制
      * @param b 需要进行转换的byte字节
-     * @return  转换后的Hex字符串
+     * @return 转换后的Hex字符串
      */
-    public String byteToHex(byte b){
+    public String byteToHex(byte b) {
         String hex = Integer.toHexString(b & 0xFF);
-        if(hex.length() < 2){
+        if (hex.length() < 2) {
             hex = "0" + hex;
         }
         return hex;
@@ -269,13 +272,13 @@ public class FormatUtils {
     /**
      * 字节数组转16进制
      * @param bytes 需要转换的byte数组
-     * @return  转换后的Hex字符串
+     * @return 转换后的Hex字符串
      */
-    public  String bytesToHex(byte[] bytes) {
+    public String bytesToHex(byte[] bytes) {
         StringBuffer sb = new StringBuffer();
-        for(int i = 0; i < bytes.length; i++) {
+        for (int i = 0; i < bytes.length; i++) {
             String hex = Integer.toHexString(bytes[i] & 0xFF);
-            if(hex.length() < 2){
+            if (hex.length() < 2) {
                 sb.append(0);
             }
             sb.append(hex);
@@ -317,7 +320,7 @@ public class FormatUtils {
         return matcher.matches();
     }
 
-    public  byte[] subBytes(byte[] src, int begin, int count) {
+    public byte[] subBytes(byte[] src, int begin, int count) {
         byte[] bs = new byte[count];
         System.arraycopy(src, begin, bs, 0, count);
         return bs;
@@ -329,7 +332,7 @@ public class FormatUtils {
      * @param radix
      * @return
      */
-    public  String binary(byte[] bytes, int radix){
+    public String binary(byte[] bytes, int radix) {
         return new BigInteger(1, bytes).toString(radix);// 这里的1代表正数
     }
 
@@ -356,7 +359,7 @@ public class FormatUtils {
      * @param
      * @return
      */
-    public  short byteToShort(byte[] tempValue) {
+    public short byteToShort(byte[] tempValue) {
         return (short) ((tempValue[0] << 8) + (tempValue[1] & 0xFF));
     }
 
@@ -368,7 +371,7 @@ public class FormatUtils {
      * @param
      * @return
      */
-    public String byteToString(byte[] tempValue){
+    public String byteToString(byte[] tempValue) {
 
         return new String(tempValue, StandardCharsets.UTF_8);
     }
@@ -395,5 +398,66 @@ public class FormatUtils {
         return stringBuilder.toString();
     }
 
+
+    /**
+     * @param i  int转byte[]
+     * @return
+     */
+    public byte[] intToByteArray(int i) {
+        byte[] result = new byte[4];
+        // 由高位到低位
+        result[0] = (byte) ((i >> 24) & 0xFF);
+        result[1] = (byte) ((i >> 16) & 0xFF);
+        result[2] = (byte) ((i >> 8) & 0xFF);
+        result[3] = (byte) (i & 0xFF);
+        return result;
+    }
+
+    /**
+     * short 转byte[]
+     *
+     * @param tempValue
+     * @return
+     */
+    public byte[] shortToByteArray(short tempValue) {
+        byte[] shortBuf = new byte[2];
+        for (int i = 0; i < 2; i++) {
+            int offset = (shortBuf.length - 1 - i) * 8;
+            shortBuf[i] = (byte) ((tempValue >>> offset) & 0xff);
+        }
+        return shortBuf;
+    }
+
+
+    /**
+     * @param data 数组倒序
+     */
+    public void reverseData(byte[] data) {
+        for (int start = 0, end = data.length - 1; start < end; start++, end--) {
+            byte temp = data[end];
+            data[end] = data[start];
+            data[start] = temp;
+        }
+    }
+
+    /**
+     * 获取手机号
+     */
+    public String getPhoneNumber() {
+        TelephonyManager tm = (TelephonyManager) MyApplication.getInstance().getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            String tel = tm.getLine1Number();
+            if (!TextUtils.isEmpty(tel)){
+                LogUtils.log("手机号码："+tel);
+                return tel.substring(3,14);
+            }else {
+               return "";
+            }
+        }
+
+        return "";
+    }
 }
 

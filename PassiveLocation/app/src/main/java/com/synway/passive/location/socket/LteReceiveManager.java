@@ -1,17 +1,19 @@
 package com.synway.passive.location.socket;
 
 
+import com.synway.passive.location.utils.CacheManager;
 import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LogUtils;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 /**
- * Created by Zxc on 2018/10/18.
+ * Author：Libin on 2020/6/10 11:05
+ * Email：1993911441@qq.com
+ * Describe：数据接收
  */
-
-public class LTEDataParse {
+public class LteReceiveManager {
     //将字节数暂存
     private ArrayList<Byte> listReceiveBuffer = new ArrayList<Byte>();
     //包头的长度
@@ -74,14 +76,13 @@ public class LTEDataParse {
         //magic  默认
         byte[] tempMagic = new byte[4];
         System.arraycopy(tempPackage, 0, tempMagic, 0, 4);
-        reverse(tempMagic);
         ltePackage.setMagic(tempMagic);
+        CacheManager.magic = tempMagic;
 
 
         //自增序列
         byte[] tempId = new byte[4];
         System.arraycopy(tempPackage, 4, tempId, 0, 4);
-        reverse(tempId);
         int id = FormatUtils.getInstance().byteToInt(tempId);
         ltePackage.setId(id);
 
@@ -89,73 +90,84 @@ public class LTEDataParse {
         //真实数据长度（消息内容部分）
         byte[] tempDataLength = new byte[4];
         System.arraycopy(tempPackage, 8, tempDataLength, 0, 4);
-        reverse(tempDataLength);
+        FormatUtils.getInstance().reverseData(tempDataLength);
         int dataLength = FormatUtils.getInstance().byteToInt(tempDataLength);
         ltePackage.setDataLength(dataLength);
 
         //消息类型
         byte[] tempType = new byte[2];
         System.arraycopy(tempPackage, 12, tempType, 0, 2);
-        reverse(tempType);
+        FormatUtils.getInstance().reverseData(tempType);
         ltePackage.setType(FormatUtils.getInstance().byteToShort(tempType));
 
 
         //crc
         byte[] tempCrc = new byte[4];
         System.arraycopy(tempPackage, 14, tempCrc, 0, 4);
-        reverse(tempCrc);
         ltePackage.setCrc(tempCrc);
 
         //设备编号
         byte[] tempDeviceName = new byte[16];
         System.arraycopy(tempPackage, 28, tempDeviceName, 0, 16);
-        reverse(tempDeviceName);
         ltePackage.setDeviceName(tempDeviceName);
+        CacheManager.deviceName = tempDeviceName;
 
         //GPS信息
-        byte[] tempGpsInfo= new byte[32];
+        byte[] tempGpsInfo = new byte[32];
         System.arraycopy(tempPackage, 34, tempGpsInfo, 0, 32);
-        reverse(tempGpsInfo);
         ltePackage.setGpsInfo(tempGpsInfo);
+        CacheManager.gpsInfo = tempGpsInfo;
 
-        //协议代码
+        //预留位
         byte[] tempReserve = new byte[16];
         System.arraycopy(tempPackage, 66, tempReserve, 0, 16);
         ltePackage.setReserve(tempReserve);
 
+        LogUtils.log("消息类型：" + ltePackage.getType());
         //包内容
-        byte[] tempData = new byte[dataLength];
-        System.arraycopy(tempPackage, 82, tempData, 0, dataLength);
-        ltePackage.setData(tempData);
+        if (dataLength > 0) {
+            byte[] tempData = new byte[dataLength];
+            System.arraycopy(tempPackage, 82, tempData, 0, dataLength);
+            ltePackage.setData(tempData);
+            LogUtils.log(FormatUtils.bytesToHexString(tempData));
 
 
-        LogUtils.log(FormatUtils.bytesToHexString(tempData));
-        if (ltePackage.getType() == 0xA3){
-            byte[] a = new byte[tempData.length - 4];
-            System.arraycopy(tempData, 4, a, 0, tempData.length - 4);
-            LogUtils.log(FormatUtils.bytesToHexString(a));
-            try {
-                String b= new String(a,"utf-8");
-                LogUtils.log("包内容："+b);
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+            if (ltePackage.getType() == MsgType.RCV_SHOW_VERSION) {
+                byte[] a = new byte[tempData.length - 1];
+                System.arraycopy(tempData, 1, a, 0, tempData.length - 1);
+                LogUtils.log(FormatUtils.bytesToHexString(a));
+                String b = new String(a, StandardCharsets.UTF_8);
+                LogUtils.log(b);
+
             }
-
         }
 
+        LteSendManager.sendData(MsgType.SEND_SERVER_HEART_BEAT);
+        LteSendManager.sendData(MsgType.SEND_SHOW_VERSION);
+
+
+
+
+//        if (ltePackage.getType() == 0xA3){
+//            byte[] a = new byte[tempData.length - 4];
+//            System.arraycopy(tempData, 4, a, 0, tempData.length - 4);
+//            LogUtils.log(FormatUtils.bytesToHexString(a));
+//            try {
+//                String b= new String(a,"utf-8");
+//
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//            }
+//
+//
+//            LTESendManager.sendData(MsgType.SEND_SERVER_HEART_BEAT,null);
+//
+//        }
 
 
         LogUtils.log(ltePackage.toString());
 
 
-    }
-
-    private void reverse(byte[] data){
-        for (int start = 0, end = data.length - 1; start < end; start++, end--) {
-            byte temp = data[end];
-            data[end] = data[start];
-            data[start] = temp;
-        }
     }
 
 
@@ -167,7 +179,7 @@ public class LTEDataParse {
      */
     public static String bytesToString(byte[] tempValue) {
         StringBuffer result = new StringBuffer();
-        if (tempValue == null || tempValue.length == 0){
+        if (tempValue == null || tempValue.length == 0) {
             return "";
         }
         int length = tempValue.length;
@@ -199,9 +211,6 @@ public class LTEDataParse {
         }
         return stringBuilder.toString();
     }
-
-
-
 
 
     public void clearReceiveBuffer() {

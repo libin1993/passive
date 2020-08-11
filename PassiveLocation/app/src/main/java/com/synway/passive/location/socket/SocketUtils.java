@@ -53,7 +53,7 @@ public class SocketUtils {
                     byte[] bytesReceived = new byte[1024];
                     //接收到流的数量
                     int receiveCount;
-                    LTEDataParse lteDataParse = new LTEDataParse();
+                    LteReceiveManager lteDataParse = new LteReceiveManager();
 
                     //获取输入流
                     InputStream inputStream = mSocket.getInputStream();

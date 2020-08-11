@@ -11,7 +11,7 @@ public class LTEPackage {
     private byte[] magic = new byte[4];  //默认：00 FF FF 00   4字节
     private int id;     //自增序列   4字节
     private int dataLength;    //数据长度（消息内容部分）   4字节
-    private short type = 0xA1;   //消息类型    2字节
+    private short type;   //消息类型    2字节
     private byte[] crc = new byte[4];   //校验码     4字节
     private byte[] deviceName = new byte[16];    //采集设备（板卡）编号  16字节
     private byte[] gpsInfo = new byte[32];  //gps

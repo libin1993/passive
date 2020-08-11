@@ -6,4 +6,5 @@
     <color name="gray_ee">#EEEEEE</color>
     <color name="gray_33">#333333</color>
     <color name="gray_22">#222222</color>
+    <color name="transparent">#00000000</color>
 </resources>

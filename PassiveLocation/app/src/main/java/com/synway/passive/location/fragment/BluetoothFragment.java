@@ -2,22 +2,18 @@ package com.synway.passive.location.fragment;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.ListView;
-import android.widget.Toast;
+import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
@@ -28,21 +24,17 @@ import com.synway.passive.location.bean.BluetoothStatus;
 import com.synway.passive.location.bean.DeviceStatus;
 import com.synway.passive.location.receiver.BluetoothReceiver;
 import com.synway.passive.location.ui.MainActivity;
-import com.synway.passive.location.utils.LogUtils;
+import com.synway.passive.location.utils.FormatUtils;
+import com.synway.passive.location.widget.RVDividerItemDecoration;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-import org.greenrobot.greendao.annotation.Entity;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,13 +43,15 @@ import butterknife.Unbinder;
 /**
  * Author：Libin on 2020/8/8 14:27
  * Email：1993911441@qq.com
- * Describe：配置
+ * Describe：蓝牙
  */
-public class ConfigFragment extends BaseFragment {
+public class BluetoothFragment extends BaseFragment {
     @BindView(R.id.cb_bluetooth)
     CheckBox cbBluetooth;
     @BindView(R.id.rv_bluetooth)
     RecyclerView rvBluetooth;
+    @BindView(R.id.tv_connect_name)
+    TextView tvConnectName;
     private Unbinder unbinder;
 
     private BluetoothReceiver bluetoothReceiver;
@@ -68,11 +62,10 @@ public class ConfigFragment extends BaseFragment {
     private boolean hasBond = false;
 
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_config, container, false);
+        View view = inflater.inflate(R.layout.fragment_bluetooth, container, false);
         unbinder = ButterKnife.bind(this, view);
         EventBus.getDefault().register(this);
         registerBroadcastReceiver();
@@ -88,16 +81,20 @@ public class ConfigFragment extends BaseFragment {
         intentFilter.addAction(BluetoothAdapter.ACTION_STATE_CHANGED);
         intentFilter.addAction(BluetoothDevice.ACTION_ACL_CONNECTED);
         intentFilter.addAction(BluetoothDevice.ACTION_ACL_DISCONNECTED);
-        getActivity().registerReceiver(bluetoothReceiver, intentFilter);
+        getParentFragment().getActivity().registerReceiver(bluetoothReceiver, intentFilter);
     }
 
     private void initView() {
 
-        rvBluetooth.setLayoutManager(new LinearLayoutManager(getActivity()));
-        adapter = new BaseQuickAdapter<BluetoothBean, BaseViewHolder>(R.layout.layout_bluetooth_item,bluetoothList) {
+        rvBluetooth.setLayoutManager(new LinearLayoutManager(getParentFragment().getActivity()));
+        rvBluetooth.addItemDecoration(new RVDividerItemDecoration(getParentFragment().getActivity(),
+                FormatUtils.getInstance().dp2px(8), R.drawable.rv_divider_black));
+        adapter = new BaseQuickAdapter<BluetoothBean, BaseViewHolder>(R.layout.layout_bluetooth_item, bluetoothList) {
             @Override
             protected void convert(BaseViewHolder helper, BluetoothBean item) {
-                helper.setText(R.id.tv_bluetooth_info,item.getName()+","+item.getAddress()+","+item.getRssi()+","+item.getBondState()) ;
+                helper.setText(R.id.tv_bluetooth_name, item.getName());
+                helper.setText(R.id.tv_bluetooth_mac, item.getAddress());
+                helper.setText(R.id.tv_bond_state, item.getBondState() == BluetoothDevice.BOND_BONDED ? "已配对" : "未配对");
             }
         };
         rvBluetooth.setAdapter(adapter);
@@ -108,12 +105,12 @@ public class ConfigFragment extends BaseFragment {
                 BluetoothBean bluetoothBean = bluetoothList.get(position);
                 device = bluetoothAdapter.getRemoteDevice(bluetoothBean.getAddress());
 
-                if (device.getBondState() == BluetoothDevice.BOND_BONDED){
-                    if ((getActivity()) !=null) {
+                if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
+                    if ((getParentFragment().getActivity()) != null) {
                         hasBond = true;
-                        ((MainActivity)getActivity()).connectBluetoothSocket(device); // 数据扔过去库
+                        ((MainActivity) getParentFragment().getActivity()).connectBluetoothSocket(device); // 数据扔过去库
                     }
-                }else {
+                } else {
                     hasBond = false;
                     device.createBond();
                 }
@@ -130,9 +127,9 @@ public class ConfigFragment extends BaseFragment {
     private CompoundButton.OnCheckedChangeListener checkedChangeListener = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if (isChecked){
+            if (isChecked) {
                 scanBluetooth();
-            }else {
+            } else {
                 bluetoothAdapter.disable();
             }
         }
@@ -141,24 +138,22 @@ public class ConfigFragment extends BaseFragment {
     /**
      * 扫描蓝牙
      */
-    private void scanBluetooth(){
-        if(bluetoothAdapter.isEnabled()){
+    private void scanBluetooth() {
+        if (bluetoothAdapter.isEnabled()) {
             bluetoothAdapter.startDiscovery();
-        }else {
+        } else {
             bluetoothAdapter.enable();
         }
     }
-
-
 
 
     /**
      * @param bluetoothBean 扫描蓝牙结果
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void scanResult(BluetoothBean bluetoothBean){
+    public void scanResult(BluetoothBean bluetoothBean) {
         for (BluetoothBean bean : bluetoothList) {
-            if (bean.getAddress().equals(bluetoothBean.getAddress())){
+            if (bean.getAddress().equals(bluetoothBean.getAddress())) {
                 return;
             }
         }
@@ -179,46 +174,51 @@ public class ConfigFragment extends BaseFragment {
      * 蓝牙状态
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void bluetoothStatus(BluetoothStatus bluetoothStatus){
-        switch (bluetoothStatus.getStatus()){
+    public void bluetoothStatus(BluetoothStatus bluetoothStatus) {
+        switch (bluetoothStatus.getStatus()) {
             case DeviceStatus.BLUETOOTH_CLOSED:
                 setBluetoothStatus(false);
+                tvConnectName.setText("设备连接蓝牙");
                 break;
             case DeviceStatus.BLUETOOTH_OPEN:
                 setBluetoothStatus(true);
                 break;
             case DeviceStatus.BLUETOOTH_DISCONNECTED:
+                tvConnectName.setText("设备连接蓝牙");
                 break;
             case DeviceStatus.BLUETOOTH_CONNECTED:
-                if ((getActivity()) !=null) {
+                if ((getParentFragment().getActivity()) != null) {
                     if (!hasBond)
-                    ((MainActivity)getActivity()).connectBluetoothSocket(device); // 数据扔过去库
+                        ((MainActivity) getParentFragment().getActivity()).connectBluetoothSocket(device); // 数据扔过去库
                 }
+                break;
+            case DeviceStatus.BLUETOOTH_SOCKET_CONNECTED:
+                tvConnectName.setText("设备连接蓝牙    "+device.getName());
+                ((ParameterFragment) getParentFragment()).selectItem(1);
                 break;
         }
     }
 
 
-
     /**
      * @param isOpen 蓝牙开关
      */
-    private void setBluetoothStatus(boolean isOpen){
+    private void setBluetoothStatus(boolean isOpen) {
         cbBluetooth.setOnCheckedChangeListener(null);
         cbBluetooth.setChecked(isOpen);
         cbBluetooth.setOnCheckedChangeListener(checkedChangeListener);
-        if (isOpen){
+        if (isOpen) {
             scanBluetooth();
-        }else {
+        } else {
             bluetoothList.clear();
             adapter.notifyDataSetChanged();
         }
     }
 
 
-    public static ConfigFragment newInstance() {
+    public static BluetoothFragment newInstance() {
         Bundle args = new Bundle();
-        ConfigFragment fragment = new ConfigFragment();
+        BluetoothFragment fragment = new BluetoothFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -227,7 +227,7 @@ public class ConfigFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
-        getActivity().unregisterReceiver(bluetoothReceiver);
+        getParentFragment().getActivity().unregisterReceiver(bluetoothReceiver);
         EventBus.getDefault().unregister(this);
     }
 
