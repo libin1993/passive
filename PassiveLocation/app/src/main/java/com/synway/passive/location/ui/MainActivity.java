@@ -26,7 +26,9 @@ import com.synway.passive.location.fragment.BluetoothFragment;
 import com.synway.passive.location.fragment.LocationFragment;
 import com.synway.passive.location.fragment.ParameterFragment;
 import com.synway.passive.location.fragment.SetFragment;
+import com.synway.passive.location.socket.BluetoothSocketUtils;
 import com.synway.passive.location.socket.SocketUtils;
+import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LogUtils;
 import com.synway.passive.location.utils.ToastUtils;
 
@@ -36,6 +38,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,10 +58,7 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.ctl_main)
     CommonTabLayout ctlMain;
     private MainTabLayoutAdapter adapter;
-    public BluetoothSD sd;
-
-    private BluetoothSocket bluetoothSocket;
-    private BluetoothDevice bluetoothDevice;
+    public static BluetoothSD sd;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,153 +75,14 @@ public class MainActivity extends BaseActivity {
             @Override
             public void sendData(byte[] data) {
                 // 蓝牙发送数据
-                MainActivity.this.sendData(data);
+                BluetoothSocketUtils.getInstance().sendData(data);
             }
         };
 
         // 启动
         Main.main(null, sd);
 
-
-
-
     }
-
-    public void connectBluetoothSocket(BluetoothDevice bluetoothDevice){
-        if (bluetoothSocket !=null && bluetoothSocket.isConnected()){
-            return;
-        }
-        SocketUtils.getInstance().connect();
-        this.bluetoothDevice = bluetoothDevice;
-        new ClientThread().start();
-    }
-
-
-    /**
-     * 客户端，进行连接的线程
-     * @author Administrator
-     *
-     */
-    class ClientThread extends Thread {
-        @Override
-        public void run(){
-            //创建一个socket尝试连接，UUID用正确格式的String来转换而成
-            try {
-                bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (bluetoothSocket == null){
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        ToastUtils.getInstance().showToast("蓝牙连接失败");
-                    }
-                });
-
-                return;
-            }
-
-            int count = 0;
-            while (true){
-                try {
-                    LogUtils.log("正在连接，请稍后......");
-                    //该方法阻塞，一直尝试连接
-
-                    bluetoothSocket.connect();
-
-                    DeviceStatus.deviceStatus = DeviceStatus.BLUETOOTH_SOCKET_CONNECTED;
-                    EventBus.getDefault().post(new BluetoothStatus(DeviceStatus.BLUETOOTH_SOCKET_CONNECTED));
-
-                    LogUtils.log("连接成功");
-                    //进行接收线程
-                    new ReadMsg().start();
-                    break;
-                } catch (IOException e) {
-                    LogUtils.log("连接失败:"+e.toString());
-                    count++;
-                    if (count >=20){
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ToastUtils.getInstance().showToast("蓝牙连接失败");
-                            }
-                        });
-                        break;
-                    }
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                    e.printStackTrace();
-                }
-            }
-
-        }
-    }
-
-
-    /**
-     * 循环读取信息的线程
-     * @author Administrator
-     *
-     */
-    class ReadMsg extends Thread {
-        @Override
-        public void run(){
-
-            byte[] buffer = new byte[1024]; // 定义字节数组装载信息
-            int bytes; // 定义长度变量
-            InputStream in = null;
-            try {
-                // 使用socket获得输入流
-                in = bluetoothSocket.getInputStream();
-                // 一直循环接收处理消息
-                while(true) {
-                    if((bytes = in.read(buffer)) != 0){
-                        byte[] buf_data = new byte[bytes];
-                        for (int i = 0; i < bytes; i++){
-                            buf_data[i] = buffer[i];
-                        }
-                        if (sd != null) {
-                           sd.rcvData(buf_data); // 数据扔过去库
-                        }
-
-                    }
-
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-                LogUtils.log("连接已断开");
-            } finally {
-                try {
-                    in.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
-
-    public void sendData(byte[] data) {
-        if(bluetoothSocket == null) { //防止未连接就发送信息
-            return;
-        }
-        try {
-            Thread.sleep(100);
-            // 使用socket获得outputstream
-            OutputStream out = bluetoothSocket.getOutputStream();
-            out.write(data); //将消息字节发出
-            out.flush(); //确保所有数据已经被写出，否则抛出异常
-        }catch(Exception e) {
-            e.printStackTrace();
-            Log.d("libin", "sendData: "+e.toString());
-        }
-    }
-
-
 
     private void initView() {
         ArrayList<CustomTabEntity> entityList = new ArrayList<>();

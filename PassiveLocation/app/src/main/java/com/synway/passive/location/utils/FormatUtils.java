@@ -1,6 +1,7 @@
 package com.synway.passive.location.utils;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -9,6 +10,7 @@ import android.text.TextUtils;
 
 import com.synway.passive.location.application.MyApplication;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
@@ -258,6 +260,7 @@ public class FormatUtils {
 
     /**
      * 字节转十六进制
+     *
      * @param b 需要进行转换的byte字节
      * @return 转换后的Hex字符串
      */
@@ -271,10 +274,11 @@ public class FormatUtils {
 
     /**
      * 字节数组转16进制
+     *
      * @param bytes 需要转换的byte数组
      * @return 转换后的Hex字符串
      */
-    public String bytesToHex(byte[] bytes) {
+    public String bytesToHexString(byte[] bytes) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < bytes.length; i++) {
             String hex = Integer.toHexString(bytes[i] & 0xFF);
@@ -365,7 +369,6 @@ public class FormatUtils {
 
 
     /**
-     *
      * byte[] 转String
      *
      * @param
@@ -376,31 +379,11 @@ public class FormatUtils {
         return new String(tempValue, StandardCharsets.UTF_8);
     }
 
-    /**
-     * byte[] 转16进制
-     *
-     * @param tempValue
-     * @return
-     */
-    public static String bytesToHexString(byte[] tempValue) {
-        StringBuilder stringBuilder = new StringBuilder();
-        if (tempValue == null || tempValue.length <= 0) {
-            return null;
-        }
-        for (int i = 0; i < tempValue.length; i++) {
-            int v = tempValue[i] & 0xFF;
-            String hv = Integer.toHexString(v);
-            if (hv.length() < 2) {
-                stringBuilder.append(0);
-            }
-            stringBuilder.append(hv);
-        }
-        return stringBuilder.toString();
-    }
+
 
 
     /**
-     * @param i  int转byte[]
+     * @param i int转byte[]
      * @return
      */
     public byte[] intToByteArray(int i) {
@@ -445,19 +428,62 @@ public class FormatUtils {
      */
     public String getPhoneNumber() {
         TelephonyManager tm = (TelephonyManager) MyApplication.getInstance().getSystemService(Context.TELEPHONY_SERVICE);
-        if (ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            String tel = tm.getLine1Number();
-            if (!TextUtils.isEmpty(tel)){
-                LogUtils.log("手机号码："+tel);
-                return tel.substring(3,14);
-            }else {
-               return "";
-            }
-        }
+//        if (ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED
+//                && ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED
+//                && ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+//            String tel = tm.getLine1Number();
+//            LogUtils.log("手机号码：" + tel);
+//            if (!TextUtils.isEmpty(tel)) {
+//                return tel.substring(3, 14);
+//            } else {
+//                return "";
+//            }
+//        }
 
-        return "";
+        String tel = tm.getLine1Number();
+        LogUtils.log("手机号码：" + tel);
+        if (!TextUtils.isEmpty(tel)) {
+            return tel.substring(3, 14);
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     * 二制度字符串转字节数组
+     *
+     * @param input 输入字符串。
+     * @return 转换好的字节数组。
+     */
+    public byte[] binaryString2bytes(String input) {
+        StringBuilder in = new StringBuilder(input);
+        // 注：这里in.length() 不可在for循环内调用，因为长度在变化
+        int remainder = in.length() % 8;
+        if (remainder > 0)
+            for (int i = 0; i < 8 - remainder; i++)
+                in.append("0");
+        byte[] bts = new byte[in.length() / 8];
+
+        // Step 8 Apply compression
+        for (int i = 0; i < bts.length; i++)
+            bts[i] = (byte) Integer.parseInt(in.substring(i * 8, i * 8 + 8), 2);
+
+        return bts;
+
+    }
+
+    /**
+     * @param number Long转byte数组
+     * @return
+     */
+    public byte[] longToBytes(long number){
+        long temp = number;
+        byte[] b =new byte[8];
+        for(int i =b.length-1; i >0; i--){
+            b[i]=Long.valueOf(temp &0xff).byteValue();//将最低位保存在最低位
+                    temp = temp >> 8;// 向右移8位
+        }
+        return b;
     }
 }
 

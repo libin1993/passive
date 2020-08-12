@@ -75,7 +75,6 @@ public class LocationFragment extends BaseFragment {
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                LogUtils.log("aaaa" + value);
                 if (value >= 0 && value < valueList.size()) {
                     return valueList.get((int) value) + "";
                 } else {

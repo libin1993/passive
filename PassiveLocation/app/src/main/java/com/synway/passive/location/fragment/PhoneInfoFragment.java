@@ -13,6 +13,8 @@ import android.widget.TextView;
 
 import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseFragment;
+import com.synway.passive.location.socket.LteSendManager;
+import com.synway.passive.location.socket.MsgType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -136,5 +138,14 @@ public class PhoneInfoFragment extends BaseFragment {
 
     @OnClick(R.id.btn_location)
     public void onViewClicked() {
+
+        int[] fcn = new int[]{37900,38098,38350};
+        LteSendManager.searchCell(1,"15167168495",1,fcn,"","");
+
+        //增益
+        LteSendManager.setPower((byte) 0);
+
+        LteSendManager.sendData(MsgType.SEND_SERVER_HEART_BEAT);
+        LteSendManager.sendData(MsgType.SEND_SHOW_VERSION);
     }
 }
