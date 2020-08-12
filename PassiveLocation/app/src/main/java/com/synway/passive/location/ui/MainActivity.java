@@ -27,6 +27,7 @@ import com.synway.passive.location.fragment.LocationFragment;
 import com.synway.passive.location.fragment.ParameterFragment;
 import com.synway.passive.location.fragment.SetFragment;
 import com.synway.passive.location.socket.BluetoothSocketUtils;
+import com.synway.passive.location.socket.LteReceiveManager;
 import com.synway.passive.location.socket.SocketUtils;
 import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LogUtils;

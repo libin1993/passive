@@ -426,7 +426,7 @@ public class FormatUtils {
      */
     public String getPhoneNumber() {
         TelephonyManager tm = (TelephonyManager) MyApplication.getInstance().getSystemService(Context.TELEPHONY_SERVICE);
-        String tel = tm.getLine1Number();
+        @SuppressLint("MissingPermission") String tel = tm.getLine1Number();
         LogUtils.log("手机号码：" + tel);
         if (!TextUtils.isEmpty(tel)) {
             return tel.substring(3, 14);
@@ -456,6 +456,34 @@ public class FormatUtils {
 
         return bts;
 
+    }
+
+    /**
+     * 字节转换为浮点
+     *
+     * @param b 字节（至少4个字节）
+     * @return
+     */
+    public float bytes2Float(byte[] b) {
+        int l;
+        l = b[0];
+        l &= 0xff;
+        l |= ((long) b[1] << 8);
+        l &= 0xffff;
+        l |= ((long) b[2] << 16);
+        l &= 0xffffff;
+        l |= ((long) b[3] << 24);
+        return Float.intBitsToFloat(l);
+    }
+
+    public  float getFloat(byte[] b) {
+        int accum = 0;
+        accum = accum|(b[0] & 0xff) << 0;
+        accum = accum|(b[1] & 0xff) << 8;
+        accum = accum|(b[2] & 0xff) << 16;
+        accum = accum|(b[3] & 0xff) << 24;
+        System.out.println(accum);
+        return Float.intBitsToFloat(accum);
     }
 
     /**

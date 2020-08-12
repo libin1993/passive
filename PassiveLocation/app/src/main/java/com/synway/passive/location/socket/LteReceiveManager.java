@@ -4,6 +4,7 @@ package com.synway.passive.location.socket;
 import com.synway.passive.location.bean.CellBean;
 import com.synway.passive.location.bean.DeviceStatus;
 import com.synway.passive.location.bean.DeviceStatusBean;
+import com.synway.passive.location.bean.LocationInfoBean;
 import com.synway.passive.location.utils.CacheManager;
 import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LogUtils;
@@ -11,6 +12,7 @@ import com.synway.passive.location.utils.ToastUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -172,7 +174,7 @@ public class LteReceiveManager {
 //                    LteSendManager.stopTrigger();
                     break;
                 case MsgType.RCV_LOCATION_INFO:
-//                    parseCell(ltePackage);
+                    parseLocation(ltePackage);
                     break;
                 case MsgType.RCV_TRIGGER_ACK:
                     parseCommon(ltePackage);
@@ -229,12 +231,36 @@ public class LteReceiveManager {
            CacheManager.cellMap.put(cellBean.getLac()+","+cellBean.getCid(),cellBean);
 
         }
-//
-//        if (cellNum > 0){
-//            LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
-//        }
+    }
 
 
+
+    /**
+     * @param ltePackage 定位数据上报
+     */
+    public  void parseLocation(LtePackage ltePackage){
+        LocationInfoBean locationBean = new LocationInfoBean();
+        byte[] locationBytes = ltePackage.getData();
+
+
+//        byte[] locationBytes = FormatUtils.getInstance().hexStringToBytes("269814580AA30406BDFF0000000000000000000000000000000013000000000000000000000082005400E8C9FFFFC15C72630000000000000000000000000000000000000000000000000000000000000000012700");
+
+        locationBean.setFreq(FormatUtils.getInstance().byteToShort(new byte[]{locationBytes[1],locationBytes[0]}) & 0x0FFFF);
+        locationBean.setLac(FormatUtils.getInstance().byteToShort(new byte[]{locationBytes[3],locationBytes[2]}) & 0x0FFFF);
+        locationBean.setCid(FormatUtils.getInstance().byteToInt(new byte[]{locationBytes[7],locationBytes[6],locationBytes[5],locationBytes[4]}));
+        locationBean.setPowerOverFlow(locationBytes[37]);
+        List<Float> powerList = new ArrayList<>();
+        for (int i = 0; i < 9; i++) {
+            float power = FormatUtils.getInstance().bytes2Float(new byte[]{locationBytes[46+4*i],locationBytes[47+4*i],locationBytes[48+4*i],locationBytes[49+4*i]});
+
+            LogUtils.log("能量值："+power);
+            powerList.add(power);
+        }
+        locationBean.setPower(powerList);
+        locationBean.setColor(locationBytes[82]);
+        locationBean.setPci(FormatUtils.getInstance().byteToShort(new byte[]{locationBytes[84],locationBytes[83]}) & 0x0FFFF);
+
+        LogUtils.log("定位数据上报:"+locationBean.toString());
     }
 
     /**
