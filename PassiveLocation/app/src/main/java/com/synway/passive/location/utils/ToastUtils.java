@@ -42,6 +42,16 @@ public class ToastUtils {
         return mInstance;
     }
 
+
+    /**
+     * 子线程Toast
+     */
+    public void showToastOnThread(String msg){
+        Looper.prepare();
+        showToast(msg);
+        Looper.loop();
+    }
+
     /**
      * @param msg
      */

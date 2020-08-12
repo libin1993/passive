@@ -380,8 +380,6 @@ public class FormatUtils {
     }
 
 
-
-
     /**
      * @param i int转byte[]
      * @return
@@ -428,18 +426,6 @@ public class FormatUtils {
      */
     public String getPhoneNumber() {
         TelephonyManager tm = (TelephonyManager) MyApplication.getInstance().getSystemService(Context.TELEPHONY_SERVICE);
-//        if (ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED
-//                && ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED
-//                && ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-//            String tel = tm.getLine1Number();
-//            LogUtils.log("手机号码：" + tel);
-//            if (!TextUtils.isEmpty(tel)) {
-//                return tel.substring(3, 14);
-//            } else {
-//                return "";
-//            }
-//        }
-
         String tel = tm.getLine1Number();
         LogUtils.log("手机号码：" + tel);
         if (!TextUtils.isEmpty(tel)) {
@@ -476,14 +462,36 @@ public class FormatUtils {
      * @param number Long转byte数组
      * @return
      */
-    public byte[] longToBytes(long number){
+    public byte[] longToBytes(long number) {
         long temp = number;
-        byte[] b =new byte[8];
-        for(int i =b.length-1; i >0; i--){
-            b[i]=Long.valueOf(temp &0xff).byteValue();//将最低位保存在最低位
-                    temp = temp >> 8;// 向右移8位
+        byte[] b = new byte[8];
+        for (int i = b.length - 1; i > 0; i--) {
+            b[i] = Long.valueOf(temp & 0xff).byteValue();//将最低位保存在最低位
+            temp = temp >> 8;// 向右移8位
         }
         return b;
+    }
+
+
+    /**
+     * @param vendor 1:移动  2：联通 3：电信
+     * @return 盲搜默认频点
+     */
+    public int[] getDefaultFcn(int vendor) {
+        int[] fcnArray;
+        switch (vendor) {
+            case 2:
+                fcnArray = new int[]{1650, 350, 1506};
+                break;
+            case 3:
+                fcnArray = new int[]{1850, 100, 2452};
+                break;
+            default:
+                fcnArray = new int[]{37900, 38400, 38950};
+                break;
+        }
+
+        return fcnArray;
     }
 }
 

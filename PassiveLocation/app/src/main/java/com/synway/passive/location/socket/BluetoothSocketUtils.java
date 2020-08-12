@@ -72,12 +72,7 @@ public class BluetoothSocketUtils {
                 e.printStackTrace();
             }
             if (bluetoothSocket == null){
-//                runOnUiThread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        ToastUtils.getInstance().showToast("蓝牙连接失败");
-//                    }
-//                });
+                ToastUtils.getInstance().showToastOnThread("蓝牙连接失败");
 
                 return;
             }
@@ -101,12 +96,8 @@ public class BluetoothSocketUtils {
                     LogUtils.log("连接失败:"+e.toString());
                     count++;
                     if (count >=20){
-//                        runOnUiThread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                ToastUtils.getInstance().showToast("蓝牙连接失败");
-//                            }
-//                        });
+
+                        ToastUtils.getInstance().showToastOnThread("蓝牙连接失败");
                         break;
                     }
                     try {

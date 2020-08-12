@@ -70,24 +70,32 @@ public class LteSendManager {
         byte[] freqNumBytes;
 
 
+//        if (searchMode ==0){
+//            freqNumBytes = new byte[]{0};
+//        }else {
+//            freqNumBytes = new byte[]{(byte) fcns.length};
+//        }
+        freqNumBytes = new byte[]{(byte) fcns.length};
+
         byte[] fcnsBytes = new byte[16];
         Arrays.fill(fcnsBytes, (byte) 0x00);
+        for (int i = 0; i < fcns.length; i++) {
 
-        if (searchMode ==0){
-            freqNumBytes = new byte[]{0};
-        }else {
-            freqNumBytes = new byte[]{(byte) fcns.length};
-            for (int i = 0; i < fcns.length; i++) {
-                byte[] fcnBytes = FormatUtils.getInstance().hexStringToBytes(Integer.toHexString(fcns[i]));
-                FormatUtils.getInstance().reverseData(fcnBytes);
-                fcnsBytes[2*i] = fcnBytes[0];
-                fcnsBytes[2*i+1] = fcnBytes[1];
+            byte[] temFcnBytes = FormatUtils.getInstance().hexStringToBytes(Integer.toHexString(fcns[i]));
+            if (temFcnBytes.length <2){
+                fcnsBytes[2*i] = temFcnBytes[0];
+                fcnsBytes[2*i+1] = 0;
+            }else {
+                fcnsBytes[2*i] = temFcnBytes[1];
+                fcnsBytes[2*i+1] = temFcnBytes[0];
             }
+
         }
 
         byte[] startModeBytes = new byte[]{0};
 
-        byte[] searchTimeBytes = FormatUtils.getInstance().shortToByteArray((short) 10);
+//        byte[] searchTimeBytes = FormatUtils.getInstance().shortToByteArray((short) 20);
+        byte[] searchTimeBytes = FormatUtils.getInstance().hexStringToBytes("FFFF");
         FormatUtils.getInstance().reverseData(searchTimeBytes);
 
         byte[] cidBytes = new byte[12];

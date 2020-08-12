@@ -11,6 +11,8 @@ import com.synway.passive.location.utils.ToastUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Author：Libin on 2020/6/10 11:05
@@ -166,8 +168,8 @@ public class LteReceiveManager {
                     break;
                 case MsgType.RCV_LOCATION_CMD:
                     parseCommon(ltePackage);
-                    LteSendManager.startTrigger();
-                    LteSendManager.stopTrigger();
+
+//                    LteSendManager.stopTrigger();
                     break;
                 case MsgType.RCV_LOCATION_INFO:
 //                    parseCell(ltePackage);
@@ -204,27 +206,34 @@ public class LteReceiveManager {
         byte[] cellBytes = new byte[ltePackage.getDataLength() - 4];
         System.arraycopy(data, 4, cellBytes, 0, ltePackage.getDataLength() - 4);
 
-        for (int i = 0; i < cellNum*21; ) {
+        for (int i = 0; i < cellNum; i++) {
             CellBean cellBean = new CellBean();
-            cellBean.setVendor(cellBytes[i]);
-            cellBean.setProtocol(cellBytes[i+1]);
-            cellBean.setFreq(FormatUtils.getInstance().byteToShort(new byte[]{cellBytes[i+3],cellBytes[i+2]}) & 0x0FFFF);
-            cellBean.setLac(FormatUtils.getInstance().byteToShort(new byte[]{cellBytes[i+5],cellBytes[i+4]})& 0x0FFFF);
-            cellBean.setCid(FormatUtils.getInstance().byteToInt(new byte[]{cellBytes[i+9],cellBytes[i+8],cellBytes[i+7],cellBytes[i+6]}));
-            cellBean.setPci(FormatUtils.getInstance().byteToShort(new byte[]{cellBytes[i+11],cellBytes[i+10]})& 0x0FFFF);
-            cellBean.setDbm(FormatUtils.getInstance().byteToShort(new byte[]{cellBytes[i+13],cellBytes[i+12]}));
-            cellBean.setSnr(cellBytes[i+14]);
-            cellBean.setOffset(FormatUtils.getInstance().byteToInt(new byte[]{cellBytes[i+18],cellBytes[i+17],cellBytes[i+16],cellBytes[i+15]}));
-            cellBean.setStatus(cellBytes[i+19]);
-            cellBean.setStateType(cellBytes[i+20]);
+            cellBean.setVendor(cellBytes[21*i]);
+            cellBean.setProtocol(cellBytes[21*i+1]);
+            cellBean.setFreq(FormatUtils.getInstance().byteToShort(new byte[]{cellBytes[21*i+3],cellBytes[21*i+2]}) & 0x0FFFF);
+            cellBean.setLac(FormatUtils.getInstance().byteToShort(new byte[]{cellBytes[21*i+5],cellBytes[21*i+4]})& 0x0FFFF);
+            cellBean.setCid(FormatUtils.getInstance().byteToInt(new byte[]{cellBytes[21*i+9],cellBytes[21*i+8],cellBytes[21*i+7],cellBytes[21*i+6]}));
+            cellBean.setPci(FormatUtils.getInstance().byteToShort(new byte[]{cellBytes[21*i+11],cellBytes[21*i+10]})& 0x0FFFF);
+            cellBean.setDbm(FormatUtils.getInstance().byteToShort(new byte[]{cellBytes[21*i+13],cellBytes[21*i+12]}));
+            cellBean.setSnr(cellBytes[21*i+14]);
+            cellBean.setOffset(FormatUtils.getInstance().byteToInt(new byte[]{cellBytes[21*i+18],cellBytes[21*i+17],cellBytes[21*i+16],cellBytes[21*i+15]}));
+            cellBean.setStatus(cellBytes[21*i+19]);
+            cellBean.setStateType(cellBytes[21*i+20]);
+
+            cellBean.setCellColorFlag(cellBytes[i+840]);
+            cellBean.setCellErrorRate(cellBytes[i+880]);
+            cellBean.setHit(cellBytes[i+1120]);
 
             LogUtils.log(cellBean.toString());
 
-            i += 21;
+           CacheManager.cellMap.put(cellBean.getLac()+","+cellBean.getCid(),cellBean);
 
         }
+//
+//        if (cellNum > 0){
+//            LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
+//        }
 
-        LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
 
     }
 

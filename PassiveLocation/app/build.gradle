@@ -72,5 +72,5 @@ dependencies {
     implementation 'com.github.lecho:hellocharts-android:v1.5.8'
     //tablayout
     implementation 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
-    implementation files('libs/CzLibrary_V1.18_20180815.jar')
+    implementation files('libs/SDK_3140_V1.2.17_20200714.jar')
 }

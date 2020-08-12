@@ -1,6 +1,7 @@
 package com.synway.passive.location.fragment;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -15,9 +16,12 @@ import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseFragment;
 import com.synway.passive.location.socket.LteSendManager;
 import com.synway.passive.location.socket.MsgType;
+import com.synway.passive.location.utils.FormatUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -139,13 +143,28 @@ public class PhoneInfoFragment extends BaseFragment {
     @OnClick(R.id.btn_location)
     public void onViewClicked() {
 
-        int[] fcn = new int[]{37900,38098,38350};
-        LteSendManager.searchCell(1,"15167168495",1,fcn,"","");
-
+        int searchMode = 0;
+        int[] fcnArray = FormatUtils.getInstance().getDefaultFcn(1);
+//        LteSendManager.searchCell(1,"15968875154",searchMode,fcnArray,"","");
+        LteSendManager.searchCell(1,"15167168495",searchMode,fcnArray,"","");
         //增益
-        LteSendManager.setPower((byte) 0);
+//        LteSendManager.setPower((byte) 0);
+//
+//        LteSendManager.sendData(MsgType.SEND_SERVER_HEART_BEAT);
+//        LteSendManager.sendData(MsgType.SEND_SHOW_VERSION);
 
-        LteSendManager.sendData(MsgType.SEND_SERVER_HEART_BEAT);
-        LteSendManager.sendData(MsgType.SEND_SHOW_VERSION);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
+            }
+        },3000);
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                LteSendManager.startTrigger();
+            }
+        },5000,5000);
     }
 }
