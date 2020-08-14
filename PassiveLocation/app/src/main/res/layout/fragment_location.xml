@@ -1,10 +1,302 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/black"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:text="@string/locate_title"
+        android:textColor="@color/white"
+        android:textSize="27dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/v_title_slice"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/gray"
+        app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
+
+    <TextView
+        android:id="@+id/tvPhoneNumber"
+        android:layout_width="180dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bottom_white_30dp_corner_border"
+        android:gravity="center"
+        android:text="18668210032"
+        android:textColor="@color/white"
+        android:textSize="15dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/v_title_slice" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/rivEnergyAnimatorBg"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_marginTop="25dp"
+        android:src="@color/locate_item"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPhoneNumber" />
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/rivEnergyBg"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="50dp"
+        android:src="@color/white"
+        app:civ_border_color="@color/orange"
+        app:civ_border_width="5dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvPhoneNumber" />
+
+    <TextView
+        android:id="@+id/tvEnergyInfo"
+        android:layout_width="0dp"
+        android:layout_height="70dp"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:text="88"
+        android:textColor="@color/locate_item"
+        android:textSize="64dp"
+        app:layout_constraintLeft_toLeftOf="@+id/rivEnergyBg"
+        app:layout_constraintRight_toRightOf="@id/rivEnergyBg"
+        app:layout_constraintTop_toTopOf="@id/rivEnergyBg" />
+
+    <TextView
+        android:id="@+id/tvEnergyInfoTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/energy_info"
+        android:textColor="@color/locate_item"
+        android:textSize="15dp"
+        app:layout_constraintLeft_toLeftOf="@+id/rivEnergyBg"
+        app:layout_constraintRight_toRightOf="@id/rivEnergyBg"
+        app:layout_constraintTop_toBottomOf="@id/tvEnergyInfo" />
+
+    <RadioGroup
+        android:layout_width="300dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:id="@+id/rgLocateMode"
+        android:background="@drawable/border_white_30dp_hollow_width2dp"
+        android:orientation="horizontal"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rivEnergyAnimatorBg">
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:button="@null"
+            android:gravity="center"
+            android:id="@+id/rbLowInputGain"
+            android:background="@drawable/locate_mode_radio_bg"
+            android:layout_weight="1"
+            android:textColor="@color/white"
+            android:text="@string/low_input_gain" />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textColor="@color/white"
+            android:id="@+id/rbMediumInputGain"
+            android:background="@drawable/locate_mode_radio_bg"
+            android:button="@null"
+            android:gravity="center"
+            android:text="@string/medium_input_gain"
+            android:layout_weight="1" />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textColor="@color/white"
+            android:id="@+id/rbHighInputGain"
+            android:background="@drawable/locate_mode_radio_bg"
+            android:button="@null"
+            android:gravity="center"
+            android:text="@string/high_input_gain"
+            android:layout_weight="1" />
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:textColor="@color/white"
+            android:id="@+id/rbSmart"
+            android:background="@drawable/locate_mode_radio_bg"
+            android:button="@null"
+            android:gravity="center"
+            android:text="@string/smart"
+            android:layout_weight="1" />
+    </RadioGroup>
+
     <com.github.mikephil.charting.charts.LineChart
         android:id="@+id/chart"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_marginTop="30dp"/>
-</LinearLayout>
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="30dp"
+        app:layout_constraintTop_toBottomOf="@+id/rgLocateMode" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_marginRight="10dp"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:text="近"
+        app:layout_constraintLeft_toRightOf="@+id/chart"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/chart"
+        android:id="@+id/tvClose"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:layout_marginRight="10dp"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:text="远"
+        app:layout_constraintLeft_toRightOf="@+id/chart"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/chart"
+        android:id="@+id/tvDistant"/>
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="30dp"
+        app:layout_constraintTop_toBottomOf="@+id/chart"
+        android:id="@+id/clMessageInductionCount"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            app:layout_constraintHorizontal_weight="1"
+            android:id="@+id/tvInductionCount1"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:text="1"
+            android:gravity="center"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/tvInductionCount2"
+            android:layout_marginRight="1dp"
+            android:background="@drawable/light_blue_left_30dp_radius_bg"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/tvInductionCount2"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:text="2"
+            android:gravity="center"
+            app:layout_constraintHorizontal_weight="1"
+            android:layout_marginRight="1dp"
+            app:layout_constraintLeft_toRightOf="@id/tvInductionCount1"
+            app:layout_constraintRight_toLeftOf="@id/tvInductionCount3"
+            android:background="@android:color/holo_blue_light"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/tvInductionCount3"
+            android:layout_marginRight="1dp"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:text="3"
+            android:gravity="center"
+            app:layout_constraintRight_toLeftOf="@id/tvInductionCount4"
+            app:layout_constraintLeft_toRightOf="@id/tvInductionCount2"
+            app:layout_constraintHorizontal_weight="1"
+            android:background="@android:color/holo_blue_light"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/tvInductionCount4"
+            android:layout_marginRight="1dp"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:text="4"
+            android:gravity="center"
+            app:layout_constraintLeft_toRightOf="@id/tvInductionCount3"
+            app:layout_constraintRight_toLeftOf="@+id/tvInductionCount5"
+            app:layout_constraintHorizontal_weight="1"
+            android:background="@android:color/holo_blue_light"/>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/tvInductionCount5"
+            android:textColor="@color/white"
+            android:textSize="18dp"
+            android:textStyle="bold"
+            android:text="5"
+            android:gravity="center"
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintLeft_toRightOf="@+id/tvInductionCount4"
+            app:layout_constraintRight_toRightOf="parent"
+            android:background="@drawable/light_blue_right_30dp_radius_bg"/>
+    </android.support.constraint.ConstraintLayout>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:src="@drawable/ic_arrow_left"
+        app:layout_constraintTop_toTopOf="@id/clMessageInductionCount"
+        app:layout_constraintBottom_toBottomOf="@id/clMessageInductionCount"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintRight_toRightOf="parent"
+        android:src="@drawable/ic_arrow_right"
+        app:layout_constraintTop_toTopOf="@id/clMessageInductionCount"
+        app:layout_constraintBottom_toBottomOf="@id/clMessageInductionCount"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvEnergyTrend"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginTop="5dp"
+        android:textSize="15dp"
+        android:text="@string/energy_trend"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toBottomOf="@+id/clMessageInductionCount"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvInductionHitCount"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textSize="15dp"
+        android:text="命中5次"
+        android:textColor="@color/white"
+        app:layout_constraintTop_toTopOf="@+id/tvEnergyTrend"
+        app:layout_constraintBottom_toBottomOf="@+id/tvEnergyTrend"
+        android:layout_marginRight="30dp"/>
+    <Button
+        android:layout_width="120dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bound_red_20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:layout_marginBottom="30dp"
+        android:id="@+id/bntStartInduction"
+        android:textColor="@color/white"
+        android:text="@string/start_induction"/>
+</android.support.constraint.ConstraintLayout>

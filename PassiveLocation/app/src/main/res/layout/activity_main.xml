@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -7,18 +7,20 @@
         android:id="@+id/vp_main"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" >
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/ctl_main">
     </android.support.v4.view.ViewPager>
-
     <com.flyco.tablayout.CommonTabLayout
         android:id="@+id/ctl_main"
         android:layout_width="match_parent"
         android:layout_height="75dp"
+        android:background="@color/home_bottom"
         app:tl_indicator_height="0dp"
         app:tl_iconGravity="TOP"
         app:tl_iconHeight="30dp"
         app:tl_iconMargin="7dp"
-        app:tl_textSelectColor="@color/gray_22"
-        app:tl_textUnselectColor="@color/gray_33"
+        app:tl_textSelectColor="@color/white"
+        app:tl_textUnselectColor="@color/gray"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:tl_textsize="14sp" />
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>

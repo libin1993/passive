@@ -9,6 +9,7 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioGroup;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -37,6 +38,9 @@ import butterknife.Unbinder;
  * Describe：定位
  */
 public class LocationFragment extends BaseFragment {
+    @BindView(R.id.rgLocateMode)
+    RadioGroup rgLocateMode;
+
     @BindView(R.id.chart)
     LineChart lineChart;
     private Unbinder unbinder;
@@ -56,6 +60,13 @@ public class LocationFragment extends BaseFragment {
     }
 
     private void initView() {
+        rgLocateMode.check(R.id.rbLowInputGain);
+        rgLocateMode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+
+            }
+        });
         lineChart.setNoDataText("");
         lineChart.setDrawGridBackground(false);
         lineChart.setHighlightPerTapEnabled(false);//隐藏图表内的点击十字线
@@ -75,6 +86,7 @@ public class LocationFragment extends BaseFragment {
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
+                LogUtils.log("aaaa" + value);
                 if (value >= 0 && value < valueList.size()) {
                     return valueList.get((int) value) + "";
                 } else {

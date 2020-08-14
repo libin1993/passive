@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
@@ -14,4 +15,22 @@
             <corners android:radius="4dp" />
         </shape>
     </item>
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+
+        <shape>
+            <solid android:color="@color/dimgrey" />
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
+    <item android:state_pressed="false">
+
+        <shape>
+            <solid android:color="@color/deepgrey2" />
+            <corners android:radius="4dp" />
+        </shape>
+    </item>
+>>>>>>> c628df228c0de7242fcb722add8c7a769319314d
 </selector>

@@ -1,7 +1,16 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@drawable/radiobutton_locate_mode_unchecked"
         android:state_checked="false" />
     <item android:drawable="@drawable/radiobutton_locate_mode_checked"
         android:state_checked="true" />
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/radiobutton_locate_mode_unchecked"
+        android:state_checked="false" />
+    <item android:drawable="@drawable/radiobutton_locate_mode_checked"
+        android:state_checked="true" />
+>>>>>>> c628df228c0de7242fcb722add8c7a769319314d
 </selector>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="induction_modes">
@@ -36,4 +37,44 @@
         <item>9000</item>
         <item>100000</item>
     </string-array>
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="induction_modes">
+        <item>制式一</item>
+        <item>制式二</item>
+        <item>制式三</item>
+    </string-array>
+    <string-array name="induction_message_count">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
+    </string-array>
+    <string-array name="induction_message_timeout">
+        <item>3000</item>
+        <item>6000</item>
+        <item>9000</item>
+        <item>12000</item>
+        <item>15000</item>
+        <item>18000</item>
+        <item>21000</item>
+        <item>24000</item>
+        <item>27000</item>
+        <item>30000</item>
+    </string-array>
+    <string-array name="induction_message_interval">
+        <item>1000</item>
+        <item>2000</item>
+        <item>3000</item>
+        <item>4000</item>
+        <item>5000</item>
+        <item>6000</item>
+        <item>7000</item>
+        <item>8000</item>
+        <item>9000</item>
+        <item>100000</item>
+    </string-array>
+>>>>>>> c628df228c0de7242fcb722add8c7a769319314d
 </resources>

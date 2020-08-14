@@ -6,8 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Author：Libin on 2020/8/8 10:33
@@ -19,8 +17,6 @@ public class SocketUtils {
     private Socket mSocket;
 
     private final static int READ_TIME_OUT = 60000;  //超时时间
-
-    private Timer timer;
 
 
     private SocketUtils() {
@@ -56,8 +52,11 @@ public class SocketUtils {
                     mSocket = new Socket("127.0.0.1",8818);
                     mSocket.setSoTimeout(READ_TIME_OUT);      //设置超时
 
+<<<<<<< HEAD
                     heartBeat();
 
+=======
+>>>>>>> c628df228c0de7242fcb722add8c7a769319314d
                     //数据缓存
                     byte[] bytesReceived = new byte[1024];
                     //接收到流的数量
@@ -78,31 +77,13 @@ public class SocketUtils {
                 } catch (Exception e) {
                     e.printStackTrace();
                     LogUtils.log("tcp错误："+e.toString());
-                    if (timer !=null){
-                        timer.cancel();
-                        timer = null;
-                    }
+
                 }
             }
         }).start();
 
     }
 
-    /**
-     * 心跳
-     */
-    private void heartBeat() {
-        if (timer == null){
-            timer = new Timer();
-            timer.schedule(new TimerTask() {
-                @Override
-                public void run() {
-                    LteSendManager.sendData(MsgType.SEND_SERVER_HEART_BEAT);
-                }
-            },1000,10000);
-
-        }
-    }
 
 
     //关闭socket
