@@ -161,5 +161,7 @@
     <color name="mediumvioletred">#c71585</color><!--中紫罗兰色 -->
     <color name="palevioletred">#db7093</color><!--苍紫罗兰色 -->
     <color name="darkviolet">#9400d3</color><!--暗紫罗兰色 -->
-    <color name="mediumorchid">#ba55d3</color><!--中粉紫色 -->
+    <color name="mediumorchid">#ba55d3</color>
+    <color name="gray_2c">#2C2C2C</color>
+    <color name="gray_535257">#535257</color><!--中粉紫色 -->
 </resources>

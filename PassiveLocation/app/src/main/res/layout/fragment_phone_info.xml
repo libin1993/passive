@@ -37,7 +37,10 @@
                 android:singleLine="true"
                 android:maxLength="8"
                 android:paddingLeft="12dp"
-                android:background="@drawable/bound_dark_gray_5dp"/>
+                android:background="@drawable/bound_dark_gray_5dp"
+                android:textColor="@android:color/white"
+                android:text="111"
+                android:textSize="14sp"/>
 
         </LinearLayout>
         <RelativeLayout
@@ -70,8 +73,11 @@
                 android:paddingLeft="12dp"
                 android:inputType="phone"
                 android:digits="@string/number_rule"
-                android:background="@drawable/bound_dark_gray_5dp"/>
-            <android.support.constraint.ConstraintLayout
+                android:background="@drawable/bound_dark_gray_5dp"
+                android:textColor="@android:color/white"
+                android:text="13175135107"
+                android:textSize="14sp"/>
+            <RelativeLayout
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:id="@+id/clToManagePhoneNumberList"
@@ -93,7 +99,7 @@
                 android:textColor="@android:color/white"
                 android:text="LAC"
                 android:layout_gravity="center_vertical"
-                android:paddingLeft="12dp"/>
+                android:paddingLeft="12dp" />
 
             <EditText
                 android:id="@+id/et_phone_lac"
@@ -104,7 +110,12 @@
                 android:singleLine="true"
                 android:maxLength="11"
                 android:paddingLeft="12dp"
-                android:background="@drawable/bound_dark_gray_5dp"/>
+                android:digits="@string/number_rule"
+                android:background="@drawable/bound_dark_gray_5dp"
+                android:textColor="@android:color/white"
+                android:text="22283"
+                android:inputType="number"
+                android:textSize="14sp"/>
 
         </LinearLayout>
         <LinearLayout
@@ -132,7 +143,12 @@
                 android:singleLine="true"
                 android:maxLength="11"
                 android:paddingLeft="12dp"
-                android:background="@drawable/bound_dark_gray_5dp"/>
+                android:background="@drawable/bound_dark_gray_5dp"
+                android:textColor="@android:color/white"
+                android:text="203686176"
+                android:digits="@string/number_rule"
+                android:inputType="number"
+                android:textSize="14sp"/>
 
 
         </LinearLayout>

@@ -52,11 +52,6 @@ public class SocketUtils {
                     mSocket = new Socket("127.0.0.1",8818);
                     mSocket.setSoTimeout(READ_TIME_OUT);      //设置超时
 
-<<<<<<< HEAD
-                    heartBeat();
-
-=======
->>>>>>> c628df228c0de7242fcb722add8c7a769319314d
                     //数据缓存
                     byte[] bytesReceived = new byte[1024];
                     //接收到流的数量

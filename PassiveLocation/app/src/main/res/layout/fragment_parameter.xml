@@ -39,7 +39,4 @@
         app:tabBackground="@drawable/tab_indicator"
         app:tabTextColor="@android:color/white"
         android:layout_below="@id/view_divider" />
-
-
-
 </RelativeLayout>

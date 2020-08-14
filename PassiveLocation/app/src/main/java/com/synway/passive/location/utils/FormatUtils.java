@@ -1,6 +1,7 @@
 package com.synway.passive.location.utils;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -9,6 +10,7 @@ import android.text.TextUtils;
 
 import com.synway.passive.location.application.MyApplication;
 
+import java.io.ByteArrayOutputStream;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
@@ -56,7 +58,7 @@ public class FormatUtils {
      * 将dp转换为与之相等的px
      */
     public int dp2px(float dipValue) {
-        final float scale = MyApplication.getInstance().getResources().getDisplayMetrics().density;
+        float scale = MyApplication.getInstance().getResources().getDisplayMetrics().density;
         return (int) (dipValue * scale + 0.5f);
     }
 
@@ -258,6 +260,7 @@ public class FormatUtils {
 
     /**
      * 字节转十六进制
+     *
      * @param b 需要进行转换的byte字节
      * @return 转换后的Hex字符串
      */
@@ -271,10 +274,11 @@ public class FormatUtils {
 
     /**
      * 字节数组转16进制
+     *
      * @param bytes 需要转换的byte数组
      * @return 转换后的Hex字符串
      */
-    public String bytesToHex(byte[] bytes) {
+    public String bytesToHexString(byte[] bytes) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < bytes.length; i++) {
             String hex = Integer.toHexString(bytes[i] & 0xFF);
@@ -365,7 +369,6 @@ public class FormatUtils {
 
 
     /**
-     *
      * byte[] 转String
      *
      * @param
@@ -376,31 +379,9 @@ public class FormatUtils {
         return new String(tempValue, StandardCharsets.UTF_8);
     }
 
-    /**
-     * byte[] 转16进制
-     *
-     * @param tempValue
-     * @return
-     */
-    public static String bytesToHexString(byte[] tempValue) {
-        StringBuilder stringBuilder = new StringBuilder();
-        if (tempValue == null || tempValue.length <= 0) {
-            return null;
-        }
-        for (int i = 0; i < tempValue.length; i++) {
-            int v = tempValue[i] & 0xFF;
-            String hv = Integer.toHexString(v);
-            if (hv.length() < 2) {
-                stringBuilder.append(0);
-            }
-            stringBuilder.append(hv);
-        }
-        return stringBuilder.toString();
-    }
-
 
     /**
-     * @param i  int转byte[]
+     * @param i int转byte[]
      * @return
      */
     public byte[] intToByteArray(int i) {
@@ -445,7 +426,6 @@ public class FormatUtils {
      */
     public String getPhoneNumber() {
         TelephonyManager tm = (TelephonyManager) MyApplication.getInstance().getSystemService(Context.TELEPHONY_SERVICE);
-<<<<<<< HEAD
         @SuppressLint("MissingPermission") String tel = tm.getLine1Number();
         LogUtils.log("手机号码：" + tel);
         if (!TextUtils.isEmpty(tel)) {
@@ -552,21 +532,9 @@ public class FormatUtils {
             default:
                 fcnArray = new int[]{37900, 38400, 38950};
                 break;
-=======
-        if (ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED
-                && ActivityCompat.checkSelfPermission(MyApplication.getInstance(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            String tel = tm.getLine1Number();
-            if (!TextUtils.isEmpty(tel)){
-                LogUtils.log("手机号码："+tel);
-                return tel.substring(3,14);
-            }else {
-               return "";
-            }
->>>>>>> c628df228c0de7242fcb722add8c7a769319314d
         }
 
-        return "";
+        return fcnArray;
     }
 }
 

@@ -6,8 +6,9 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@mipmap/ic_launcher"
+        android:src="@mipmap/ic_bluetooth"
         android:scaleType="fitCenter"
+        android:layout_gravity="center_vertical"
         android:layout_marginLeft="12dp"/>
 
     <LinearLayout
@@ -24,7 +25,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:textColor="@android:color/white"/>
+            android:textColor="@android:color/white"
+            android:singleLine="true"
+            android:ellipsize="end" />
         <TextView
             android:id="@+id/tv_bluetooth_mac"
             android:layout_width="wrap_content"
@@ -41,6 +44,7 @@
         android:textSize="14sp"
         android:textColor="@android:color/white"
         android:layout_gravity="center_vertical"
-        android:layout_marginRight="12dp"/>
+        android:layout_marginRight="12dp"
+        android:layout_marginLeft="12dp"/>
 
 </LinearLayout>

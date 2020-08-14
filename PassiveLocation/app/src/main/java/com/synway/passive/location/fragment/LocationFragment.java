@@ -2,14 +2,15 @@ package com.synway.passive.location.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -23,13 +24,23 @@ import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseFragment;
-import com.synway.passive.location.utils.LogUtils;
+import com.synway.passive.location.bean.LocationInfoBean;
+import com.synway.passive.location.utils.CacheManager;
+import com.synway.passive.location.utils.LoadingUtils;
+import com.synway.passive.location.utils.ToastUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -43,18 +54,25 @@ public class LocationFragment extends BaseFragment {
 
     @BindView(R.id.chart)
     LineChart lineChart;
+    @BindView(R.id.bntStartInduction)
+    Button bntStartInduction;
+    @BindView(R.id.tvEnergyInfo)
+    TextView tvEnergyInfo;
+    @BindView(R.id.tvPhoneNumber)
+    TextView tvPhoneNumber;
     private Unbinder unbinder;
     private LineDataSet lineDataSet;
     private LineData lineData;
 
     private List<Integer> valueList = new ArrayList<>();
+    private boolean startTrigger = false;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_location, container, false);
         unbinder = ButterKnife.bind(this, view);
-
+        EventBus.getDefault().register(this);
         initView();
         return view;
     }
@@ -86,7 +104,6 @@ public class LocationFragment extends BaseFragment {
         xAxis.setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                LogUtils.log("aaaa" + value);
                 if (value >= 0 && value < valueList.size()) {
                     return valueList.get((int) value) + "";
                 } else {
@@ -126,21 +143,6 @@ public class LocationFragment extends BaseFragment {
         lineData = new LineData();
         lineChart.setData(lineData);
         lineChart.invalidate();
-
-
-        new CountDownTimer(50000, 1000) {
-            @Override
-            public void onTick(long millisUntilFinished) {
-                int value = (int) (Math.random() * 100);
-                valueList.add(value);
-                addEntry(value);
-            }
-
-            @Override
-            public void onFinish() {
-
-            }
-        }.start();
     }
 
 
@@ -175,6 +177,56 @@ public class LocationFragment extends BaseFragment {
 
     }
 
+    private void startLocation() {
+        valueList.clear();
+        tvEnergyInfo.setText("0");
+        lineDataSet.clear();
+        lineChart.clear();
+        lineChart.invalidate();
+        tvPhoneNumber.setText(CacheManager.phoneNumber);
+        startTrigger = false;
+        bntStartInduction.setText("开始诱发");
+    }
+
+
+    @OnClick(R.id.bntStartInduction)
+    public void onViewClicked() {
+        if (!CacheManager.isLocation) {
+            ToastUtils.getInstance().showToast("请先定位目标");
+            return;
+        }
+
+        if (startTrigger) {
+            LoadingUtils.getInstance().showLoading(getActivity(), "正在诱发中");
+            bntStartInduction.setText("停止诱发");
+            startTrigger = true;
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+
+                }
+            }, 0, 5000);
+        } else {
+            LoadingUtils.getInstance().showLoading(getActivity(), "停止诱发中");
+            bntStartInduction.setText("开始诱发");
+            startTrigger = false;
+        }
+
+
+    }
+
+    /**
+     *
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void scanResult(LocationInfoBean locationInfoBean) {
+        for (Short dbm : locationInfoBean.getDbm()) {
+            valueList.add(Integer.valueOf(dbm));
+            addEntry(dbm);
+            tvEnergyInfo.setText("" + dbm);
+        }
+    }
+
 
     public static LocationFragment newInstance() {
 
@@ -189,5 +241,7 @@ public class LocationFragment extends BaseFragment {
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        EventBus.getDefault().unregister(this);
     }
+
 }

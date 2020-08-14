@@ -2,23 +2,40 @@ package com.synway.passive.location.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseFragment;
+import com.synway.passive.location.socket.BluetoothSocketUtils;
+import com.synway.passive.location.socket.LteSendManager;
+import com.synway.passive.location.socket.MsgType;
+import com.synway.passive.location.ui.MainActivity;
 import com.synway.passive.location.ui.PhoneNumberManageActivity;
+import com.synway.passive.location.utils.CacheManager;
+import com.synway.passive.location.utils.FormatUtils;
+import com.synway.passive.location.utils.LoadingUtils;
+import com.synway.passive.location.utils.ToastUtils;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -47,7 +64,9 @@ public class PhoneInfoFragment extends BaseFragment {
     @BindView(R.id.btn_location)
     Button btnLocation;
     @BindView(R.id.clToManagePhoneNumberList)
-    ConstraintLayout clToManagePhoneNumberList;
+    RelativeLayout clToManagePhoneNumberList;
+
+    private boolean searchSuccess = false;
 
     @Nullable
     @Override
@@ -55,6 +74,7 @@ public class PhoneInfoFragment extends BaseFragment {
         View view = inflater.inflate(R.layout.fragment_phone_info, container, false);
 
         unbinder = ButterKnife.bind(this, view);
+        EventBus.getDefault().register(this);
         initView();
         return view;
     }
@@ -64,7 +84,6 @@ public class PhoneInfoFragment extends BaseFragment {
         standardList.add("移动");
         standardList.add("联通");
         standardList.add("电信");
-
 
 
         List<String> fcnList = new ArrayList<>();
@@ -78,7 +97,7 @@ public class PhoneInfoFragment extends BaseFragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), PhoneNumberManageActivity.class);
-                getActivity().startActivity(intent);
+                getParentFragment().getActivity().startActivity(intent);
             }
         });
     }
@@ -139,40 +158,91 @@ public class PhoneInfoFragment extends BaseFragment {
         return fragment;
     }
 
+
+
+    @OnClick(R.id.btn_location)
+    public void onViewClicked() {
+        if (BluetoothSocketUtils.getInstance().isConnected()){
+            ToastUtils.getInstance().showToast("请先连接蓝牙");
+            return;
+        }
+        LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(),"定位中");
+        CacheManager.cellMap.clear();
+        searchSuccess = false;
+        final String phoneNumber = etPhoneNumber.getText().toString().trim();
+        if (TextUtils.isEmpty(phoneNumber) || phoneNumber.length() !=11){
+            ToastUtils.getInstance().showToast("请输入11位手机号");
+            return;
+        }
+        CacheManager.phoneNumber = phoneNumber;
+
+        String lac = etPhoneLac.getText().toString().trim();
+        if (TextUtils.isEmpty(lac)){
+            ToastUtils.getInstance().showToast("请输入LAC");
+            return;
+        }
+        CacheManager.lac = lac;
+
+
+        String cid = etPhoneCid.getText().toString().trim();
+        if (TextUtils.isEmpty(cid)){
+            ToastUtils.getInstance().showToast("请输入CID");
+            return;
+        }
+        CacheManager.isLocation = false;
+        CacheManager.cid =cid;
+        int vendor = tabLayoutStandard.getSelectedTabPosition()+1;
+
+        int searchMode = 0;
+        int[] fcnArray = FormatUtils.getInstance().getDefaultFcn(vendor);
+
+        LteSendManager.searchCell(vendor,phoneNumber,searchMode,fcnArray,"","");
+
+        new CountDownTimer(10000, 1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                if (searchSuccess){
+                    cancel();
+                    LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
+                }
+            }
+
+            @Override
+            public void onFinish() {
+                LoadingUtils.getInstance().dismiss();
+                if (!searchSuccess){
+                    if (CacheManager.cellMap.size() <= 0){
+                        ToastUtils.getInstance().showToast("未搜索到小区");
+                        return;
+                    }
+                    DetectFailedDialog detectFailedDialog = new DetectFailedDialog();
+                    detectFailedDialog.setCancelable(false);
+                    detectFailedDialog.show(getChildFragmentManager(),"");
+                }
+            }
+        }.start();
+
+
+
+    }
+
+    /**
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void scanResult(String searchResult) {
+       if ("searchSuccess".equals(searchResult)){
+           searchSuccess = true;
+       }else if ("research".equals(searchResult)){
+           onViewClicked();
+       }
+    }
+
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
+        EventBus.getDefault().unregister(this);
     }
 
-    @OnClick(R.id.btn_location)
-    public void onViewClicked() {
-<<<<<<< HEAD
-
-        int searchMode = 0;
-        int[] fcnArray = FormatUtils.getInstance().getDefaultFcn(2);
-//        LteSendManager.searchCell(1,"15968875154",searchMode,fcnArray,"","");
-        LteSendManager.searchCell(2,"13175135107",searchMode,fcnArray,"","");
-        //增益
-//        LteSendManager.setPower((byte) 0);
-//
-//        LteSendManager.sendData(MsgType.SEND_SERVER_HEART_BEAT);
-//        LteSendManager.sendData(MsgType.SEND_SHOW_VERSION);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
-            }
-        },3000);
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                LteSendManager.startTrigger();
-            }
-        },5000,5000);
-=======
->>>>>>> c628df228c0de7242fcb722add8c7a769319314d
-    }
 }

@@ -12,6 +12,9 @@ import org.apache.http.util.ByteArrayBuffer;
 import java.io.BufferedInputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+
+import static com.synway.passive.location.utils.CacheManager.magic;
 
 /**
  * Author：Libin on 2020/6/10 11:05
@@ -22,7 +25,6 @@ public class LteSendManager {
     private static int id = 0;  //消息自增序列
 
 
-<<<<<<< HEAD
     /**
      * 小区搜索
      *
@@ -69,11 +71,6 @@ public class LteSendManager {
         byte[] freqNumBytes;
 
 
-//        if (searchMode ==0){
-//            freqNumBytes = new byte[]{0};
-//        }else {
-//            freqNumBytes = new byte[]{(byte) fcns.length};
-//        }
         freqNumBytes = new byte[]{(byte) fcns.length};
 
         byte[] fcnsBytes = new byte[16];
@@ -176,37 +173,6 @@ public class LteSendManager {
      */
     public static void setPower(byte power) {
         sendData(MsgType.SEND_SET_POWERLEV, new byte[]{power});
-=======
-    /**  小区搜索
-     * @param protocol  制式
-     * @param vendor    运营商
-     * @param targetPhoneNumber 目标手机号
-     * @param triggerPhoneNumber
-     * @param searchMode  搜索模式
-     * @param lac
-     * @param cid
-     */
-    public static void searchCell(int protocol, int vendor,String targetPhoneNumber, String triggerPhoneNumber,String searchMode,String lac, String cid) {
-        byte[] protocolBytes =new byte[]{(byte) protocol};
-        byte[] vendorBytes = new byte[]{(byte) vendor};
-
-        byte[] targetNumberBytes = new byte[targetPhoneNumber.length()];
-        for (int i = 0; i < targetNumberBytes.length; i++) {
-            targetNumberBytes[i] = (byte) targetPhoneNumber.charAt(i);
-        }
-
-        byte[] triggerNumberBytes = new byte[triggerPhoneNumber.length()];
-        for (int i = 0; i < triggerNumberBytes.length; i++) {
-            triggerNumberBytes[i] = (byte) triggerPhoneNumber.charAt(i);
-        }
-
-        byte[] tmsiBytes = FormatUtils.getInstance().hexStringToBytes("0xffffffff");
-        byte[] imsiBytes = new byte[16];
-        byte[] thresholdBytes = new byte[]{5};
-        byte[] mmecBytes = FormatUtils.getInstance().hexStringToBytes("0xff");
-        byte[] searchModeBytes = searchMode.getBytes();
-//        byte[] freqNumBytes = new by;
->>>>>>> c628df228c0de7242fcb722add8c7a769319314d
     }
 
 
@@ -219,11 +185,11 @@ public class LteSendManager {
      * @param data
      */
     public static void sendData(short msgType, byte[] data) {
-        if (CacheManager.magic == null) {
+        if (magic == null) {
             LogUtils.log("网络未连接");
             return;
         }
-        int packageLength = 82;  //包长度
+
         byte[] magic = CacheManager.magic;
 
         //自增序列
@@ -236,18 +202,14 @@ public class LteSendManager {
         FormatUtils.getInstance().reverseData(msgId);
 
         //消息长度
+        byte[] msgLengthBytes;
         if (data != null && data.length > 0) {
-<<<<<<< HEAD
             msgLengthBytes = FormatUtils.getInstance().intToByteArray(data.length);
 
         } else {
             msgLengthBytes = new byte[4];
-=======
-            packageLength += data.length;
->>>>>>> c628df228c0de7242fcb722add8c7a769319314d
         }
-        byte[] msgLength = FormatUtils.getInstance().intToByteArray(packageLength);
-        FormatUtils.getInstance().reverseData(msgLength);
+        FormatUtils.getInstance().reverseData(msgLengthBytes);
 
         //消息类型
         byte[] type = FormatUtils.getInstance().shortToByteArray(msgType);
@@ -263,11 +225,16 @@ public class LteSendManager {
         byte[] reserve = new byte[16];
 
 
+        int packageLength = 82;
+        if (data != null && data.length > 0) {
+            packageLength += data.length;
+        }
+
         ByteArrayBuffer byteArray = new ByteArrayBuffer(packageLength);
 
         byteArray.append(magic, 0, magic.length);
         byteArray.append(msgId, 0, msgId.length);
-        byteArray.append(msgLength, 0, msgLength.length);
+        byteArray.append(msgLengthBytes, 0, msgLengthBytes.length);
         byteArray.append(type, 0, type.length);
         byteArray.append(crc, 0, crc.length);
         byteArray.append(deviceName, 0, deviceName.length);
@@ -278,18 +245,15 @@ public class LteSendManager {
             byteArray.append(data, 0, data.length);
         }
 
-<<<<<<< HEAD
         byte[] bytes = byteArray.toByteArray();
 
         LogUtils.log("发送数据长度：" + bytes.length);
         LogUtils.log("发送数据类型：" + Integer.toHexString(msgType));
         LogUtils.log("发送数据：" + FormatUtils.getInstance().bytesToHexString(bytes));
-=======
->>>>>>> c628df228c0de7242fcb722add8c7a769319314d
 
-        byte[] bytes = byteArray.toByteArray();
 
         SocketUtils.getInstance().sendData(bytes);
+
 
     }
 

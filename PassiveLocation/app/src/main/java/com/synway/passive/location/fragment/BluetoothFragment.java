@@ -23,8 +23,10 @@ import com.synway.passive.location.bean.BluetoothBean;
 import com.synway.passive.location.bean.BluetoothStatus;
 import com.synway.passive.location.bean.DeviceStatus;
 import com.synway.passive.location.receiver.BluetoothReceiver;
+import com.synway.passive.location.socket.BluetoothSocketUtils;
 import com.synway.passive.location.ui.MainActivity;
 import com.synway.passive.location.utils.FormatUtils;
+import com.synway.passive.location.utils.LoadingUtils;
 import com.synway.passive.location.widget.RVDividerItemDecoration;
 
 import org.greenrobot.eventbus.EventBus;
@@ -108,7 +110,8 @@ public class BluetoothFragment extends BaseFragment {
                 if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
                     if ((getParentFragment().getActivity()) != null) {
                         hasBond = true;
-                        ((MainActivity) getParentFragment().getActivity()).connectBluetoothSocket(device); // 数据扔过去库
+                        LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(),"正在连接蓝牙");
+                        BluetoothSocketUtils.getInstance().connectBluetoothSocket(device); // 数据扔过去库
                     }
                 } else {
                     hasBond = false;
@@ -189,7 +192,8 @@ public class BluetoothFragment extends BaseFragment {
             case DeviceStatus.BLUETOOTH_CONNECTED:
                 if ((getParentFragment().getActivity()) != null) {
                     if (!hasBond)
-                        ((MainActivity) getParentFragment().getActivity()).connectBluetoothSocket(device); // 数据扔过去库
+                        LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(),"正在连接蓝牙");
+                        BluetoothSocketUtils.getInstance().connectBluetoothSocket(device); // 数据扔过去库
                 }
                 break;
             case DeviceStatus.BLUETOOTH_SOCKET_CONNECTED:

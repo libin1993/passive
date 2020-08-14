@@ -45,6 +45,15 @@ public class ToastUtils {
     /**
      * @param msg
      */
+    public void showToastOnThread(String msg) {
+        Looper.prepare();
+        showToast(msg);
+        Looper.loop();
+    }
+
+    /**
+     * @param msg
+     */
     public void showToast(String msg) {
 
         if (TextUtils.isEmpty(msg)) {

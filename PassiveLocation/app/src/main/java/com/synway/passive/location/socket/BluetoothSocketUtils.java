@@ -7,6 +7,7 @@ import android.util.Log;
 import com.synway.passive.location.bean.BluetoothStatus;
 import com.synway.passive.location.bean.DeviceStatus;
 import com.synway.passive.location.ui.MainActivity;
+import com.synway.passive.location.utils.LoadingUtils;
 import com.synway.passive.location.utils.LogUtils;
 import com.synway.passive.location.utils.ToastUtils;
 
@@ -50,8 +51,10 @@ public class BluetoothSocketUtils {
 
     public void connectBluetoothSocket(BluetoothDevice bluetoothDevice){
         if (bluetoothSocket !=null && bluetoothSocket.isConnected()){
+            LoadingUtils.getInstance().dismiss();
             return;
         }
+
         SocketUtils.getInstance().connect();
         this.bluetoothDevice = bluetoothDevice;
         new ClientThread().start();
@@ -89,6 +92,7 @@ public class BluetoothSocketUtils {
                     EventBus.getDefault().post(new BluetoothStatus(DeviceStatus.BLUETOOTH_SOCKET_CONNECTED));
 
                     LogUtils.log("连接成功");
+                    LoadingUtils.getInstance().dismiss();
                     //进行接收线程
                     new ReadMsg().start();
                     break;
@@ -96,7 +100,7 @@ public class BluetoothSocketUtils {
                     LogUtils.log("连接失败:"+e.toString());
                     count++;
                     if (count >=20){
-
+                        LoadingUtils.getInstance().dismiss();
                         ToastUtils.getInstance().showToastOnThread("蓝牙连接失败");
                         break;
                     }
@@ -171,6 +175,10 @@ public class BluetoothSocketUtils {
             e.printStackTrace();
             Log.d("libin", "sendData: "+e.toString());
         }
+    }
+
+    public boolean  isConnected(){
+        return bluetoothDevice !=null && bluetoothSocket !=null && bluetoothSocket.isConnected();
     }
 
 }
