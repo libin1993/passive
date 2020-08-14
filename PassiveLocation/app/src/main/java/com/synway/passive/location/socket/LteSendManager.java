@@ -27,27 +27,28 @@ public class LteSendManager {
 
     /**
      * 小区搜索
-     * @param vendor             运营商
-     * @param targetPhoneNumber  目标手机号
-     * @param searchMode         搜索模式
+     *
+     * @param vendor            运营商
+     * @param targetPhoneNumber 目标手机号
+     * @param searchMode        搜索模式
      * @param lac
      * @param cid
      */
-    public static void searchCell( int vendor, String targetPhoneNumber,
+    public static void searchCell(int vendor, String targetPhoneNumber,
                                   int searchMode, int[] fcns, String lac, String cid) {
         byte[] protocolBytes = new byte[]{(byte) 7};
         byte[] vendorBytes = new byte[]{(byte) vendor};
 
         byte[] targetNumberBytes = new byte[11];
         for (int i = 0; i < 11; i++) {
-            int targetNumber = Integer.parseInt(targetPhoneNumber.substring(i,i+1));
+            int targetNumber = Integer.parseInt(targetPhoneNumber.substring(i, i + 1));
             targetNumberBytes[i] = (byte) targetNumber;
         }
 
         String triggerPhoneNumber = FormatUtils.getInstance().getPhoneNumber();
         byte[] triggerNumberBytes = new byte[11];
         for (int i = 0; i < 11; i++) {
-            int triggerNumber = Integer.parseInt(triggerPhoneNumber.substring(i,i+1));
+            int triggerNumber = Integer.parseInt(triggerPhoneNumber.substring(i, i + 1));
             triggerNumberBytes[i] = (byte) triggerNumber;
         }
 
@@ -81,14 +82,9 @@ public class LteSendManager {
         Arrays.fill(fcnsBytes, (byte) 0x00);
         for (int i = 0; i < fcns.length; i++) {
 
-            byte[] temFcnBytes = FormatUtils.getInstance().hexStringToBytes(Integer.toHexString(fcns[i]));
-            if (temFcnBytes.length <2){
-                fcnsBytes[2*i] = temFcnBytes[0];
-                fcnsBytes[2*i+1] = 0;
-            }else {
-                fcnsBytes[2*i] = temFcnBytes[1];
-                fcnsBytes[2*i+1] = temFcnBytes[0];
-            }
+            byte[] temFcnBytes = FormatUtils.getInstance().hexStringToBytes(FormatUtils.getInstance().intToHexString(fcns[i]));
+            fcnsBytes[2 * i] = temFcnBytes[1];
+            fcnsBytes[2 * i + 1] = temFcnBytes[0];
 
         }
 
@@ -128,20 +124,20 @@ public class LteSendManager {
 
         byte[] bytes = byteArray.toByteArray();
 
-        sendData(MsgType.SEND_CELL_SEARCH,bytes);
+        sendData(MsgType.SEND_CELL_SEARCH, bytes);
 
     }
 
     /**
      * 开始诱发
      */
-    public static void startTrigger(){
+    public static void startTrigger() {
         byte[] triggerModeBytes = new byte[]{1};
 
         String triggerPhoneNumber = FormatUtils.getInstance().getPhoneNumber();
         byte[] triggerNumberBytes = new byte[11];
         for (int i = 0; i < triggerNumberBytes.length; i++) {
-            int triggerNumber = Integer.parseInt(triggerPhoneNumber.substring(i,i+1));
+            int triggerNumber = Integer.parseInt(triggerPhoneNumber.substring(i, i + 1));
             triggerNumberBytes[i] = (byte) triggerNumber;
         }
 
@@ -153,14 +149,14 @@ public class LteSendManager {
 
         byte[] bytes = byteArray.toByteArray();
 
-        sendData(MsgType.SEND_TRIGGER_START,bytes);
+        sendData(MsgType.SEND_TRIGGER_START, bytes);
 
     }
 
     /**
      * 结束诱发
      */
-    public static void stopTrigger(){
+    public static void stopTrigger() {
         byte[] errorCodeBytes = new byte[4];
 
         byte[] flagBytes = new byte[]{0};
@@ -170,19 +166,19 @@ public class LteSendManager {
 
         byte[] bytes = byteArray.toByteArray();
 
-        sendData(MsgType.SEND_TRIGGER_END,bytes);
+        sendData(MsgType.SEND_TRIGGER_END, bytes);
 
     }
 
 
     /**
      * 设置增益
-     * @param power  0：高增益  1：中增益 2：低增益 3：调试增益
+     *
+     * @param power 0：高增益  1：中增益 2：低增益 3：调试增益
      */
-    public static void setPower(byte power){
-        sendData(MsgType.SEND_SET_POWERLEV,new byte[]{power});
+    public static void setPower(byte power) {
+        sendData(MsgType.SEND_SET_POWERLEV, new byte[]{power});
     }
-
 
 
     public static void sendData(short msgType) {
@@ -215,8 +211,8 @@ public class LteSendManager {
         if (data != null && data.length > 0) {
             msgLengthBytes = FormatUtils.getInstance().intToByteArray(data.length);
 
-        }else {
-            msgLengthBytes =new byte[4];
+        } else {
+            msgLengthBytes = new byte[4];
         }
         FormatUtils.getInstance().reverseData(msgLengthBytes);
 
@@ -256,9 +252,9 @@ public class LteSendManager {
 
         byte[] bytes = byteArray.toByteArray();
 
-        LogUtils.log("发送数据长度："+bytes.length);
-        LogUtils.log("发送数据类型："+Integer.toHexString(msgType));
-        LogUtils.log("发送数据："+FormatUtils.getInstance().bytesToHexString(bytes));
+        LogUtils.log("发送数据长度：" + bytes.length);
+        LogUtils.log("发送数据类型：" + Integer.toHexString(msgType));
+        LogUtils.log("发送数据：" + FormatUtils.getInstance().bytesToHexString(bytes));
 
 
         SocketUtils.getInstance().sendData(bytes);

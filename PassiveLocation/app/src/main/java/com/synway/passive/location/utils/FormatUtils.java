@@ -500,6 +500,21 @@ public class FormatUtils {
         return b;
     }
 
+    /**
+     * 将一个整形化为十六进制，并以字符串的形式返回
+     */
+    public String intToHexString(int n) {
+        String hexString = Integer.toHexString(n);
+        LogUtils.log("16进制字符串："+hexString);
+        if (hexString.length() == 2){
+            hexString = "00"+hexString;
+        }else if (hexString.length()  % 2 != 0){
+            hexString = "0"+hexString;
+        }
+
+        return hexString;
+    }
+
 
     /**
      * @param vendor 1:移动  2：联通 3：电信

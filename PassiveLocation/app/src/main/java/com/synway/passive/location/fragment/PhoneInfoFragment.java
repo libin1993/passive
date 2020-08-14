@@ -144,9 +144,9 @@ public class PhoneInfoFragment extends BaseFragment {
     public void onViewClicked() {
 
         int searchMode = 0;
-        int[] fcnArray = FormatUtils.getInstance().getDefaultFcn(1);
+        int[] fcnArray = FormatUtils.getInstance().getDefaultFcn(2);
 //        LteSendManager.searchCell(1,"15968875154",searchMode,fcnArray,"","");
-        LteSendManager.searchCell(1,"15167168495",searchMode,fcnArray,"","");
+        LteSendManager.searchCell(2,"13175135107",searchMode,fcnArray,"","");
         //增益
 //        LteSendManager.setPower((byte) 0);
 //

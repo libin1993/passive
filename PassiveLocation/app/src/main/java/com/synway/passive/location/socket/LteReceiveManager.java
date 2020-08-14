@@ -231,6 +231,8 @@ public class LteReceiveManager {
            CacheManager.cellMap.put(cellBean.getLac()+","+cellBean.getCid(),cellBean);
 
         }
+
+        LogUtils.log("小区个数："+CacheManager.cellMap.size());
     }
 
 
@@ -238,25 +240,25 @@ public class LteReceiveManager {
     /**
      * @param ltePackage 定位数据上报
      */
-    public  void parseLocation(LtePackage ltePackage){
+    public  static void parseLocation(LtePackage ltePackage){
         LocationInfoBean locationBean = new LocationInfoBean();
         byte[] locationBytes = ltePackage.getData();
-
-
-//        byte[] locationBytes = FormatUtils.getInstance().hexStringToBytes("269814580AA30406BDFF0000000000000000000000000000000013000000000000000000000082005400E8C9FFFFC15C72630000000000000000000000000000000000000000000000000000000000000000012700");
 
         locationBean.setFreq(FormatUtils.getInstance().byteToShort(new byte[]{locationBytes[1],locationBytes[0]}) & 0x0FFFF);
         locationBean.setLac(FormatUtils.getInstance().byteToShort(new byte[]{locationBytes[3],locationBytes[2]}) & 0x0FFFF);
         locationBean.setCid(FormatUtils.getInstance().byteToInt(new byte[]{locationBytes[7],locationBytes[6],locationBytes[5],locationBytes[4]}));
         locationBean.setPowerOverFlow(locationBytes[37]);
-        List<Float> powerList = new ArrayList<>();
+        List<Short> dbmList = new ArrayList<>();
         for (int i = 0; i < 9; i++) {
-            float power = FormatUtils.getInstance().bytes2Float(new byte[]{locationBytes[46+4*i],locationBytes[47+4*i],locationBytes[48+4*i],locationBytes[49+4*i]});
+            short dbm = FormatUtils.getInstance().byteToShort(new byte[]{locationBytes[9+2*i],locationBytes[8+2*i]});
 
-            LogUtils.log("能量值："+power);
-            powerList.add(power);
+            LogUtils.log("dbm："+dbm);
+            if (dbm !=0){
+                dbmList.add(dbm);
+            }
+
         }
-        locationBean.setPower(powerList);
+        locationBean.setDbm(dbmList);
         locationBean.setColor(locationBytes[82]);
         locationBean.setPci(FormatUtils.getInstance().byteToShort(new byte[]{locationBytes[84],locationBytes[83]}) & 0x0FFFF);
 

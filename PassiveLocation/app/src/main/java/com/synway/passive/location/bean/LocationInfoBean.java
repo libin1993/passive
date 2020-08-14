@@ -11,10 +11,18 @@ public class LocationInfoBean {
     private int freq;
     private int lac;
     private int cid;
+    private List<Short> dbm;
     private byte powerOverFlow;
-    private List<Float> power;
     private byte color;
     private int pci;
+
+    public List<Short> getDbm() {
+        return dbm;
+    }
+
+    public void setDbm(List<Short> dbm) {
+        this.dbm = dbm;
+    }
 
     public int getFreq() {
         return freq;
@@ -48,13 +56,6 @@ public class LocationInfoBean {
         this.cid = cid;
     }
 
-    public List<Float> getPower() {
-        return power;
-    }
-
-    public void setPower(List<Float> power) {
-        this.power = power;
-    }
 
     public byte getColor() {
         return color;
@@ -78,8 +79,8 @@ public class LocationInfoBean {
                 "freq=" + freq +
                 ", lac=" + lac +
                 ", cid=" + cid +
+                ", dbm=" + dbm +
                 ", powerOverFlow=" + powerOverFlow +
-                ", power=" + power +
                 ", color=" + color +
                 ", pci=" + pci +
                 '}';
