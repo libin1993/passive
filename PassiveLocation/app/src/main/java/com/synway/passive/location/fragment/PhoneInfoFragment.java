@@ -1,9 +1,10 @@
 package com.synway.passive.location.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.TabLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,14 +15,10 @@ import android.widget.TextView;
 
 import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseFragment;
-import com.synway.passive.location.socket.LteSendManager;
-import com.synway.passive.location.socket.MsgType;
-import com.synway.passive.location.utils.FormatUtils;
+import com.synway.passive.location.ui.PhoneNumberManageActivity;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -49,6 +46,8 @@ public class PhoneInfoFragment extends BaseFragment {
     TabLayout tabLayoutFcn;
     @BindView(R.id.btn_location)
     Button btnLocation;
+    @BindView(R.id.clToManagePhoneNumberList)
+    ConstraintLayout clToManagePhoneNumberList;
 
     @Nullable
     @Override
@@ -75,7 +74,13 @@ public class PhoneInfoFragment extends BaseFragment {
 
         initTabLayout(tabLayoutStandard,standardList);
         initTabLayout(tabLayoutFcn,fcnList);
-
+        clToManagePhoneNumberList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), PhoneNumberManageActivity.class);
+                getActivity().startActivity(intent);
+            }
+        });
     }
 
     private void initTabLayout(TabLayout tabLayout,List<String> titleList){
@@ -142,29 +147,5 @@ public class PhoneInfoFragment extends BaseFragment {
 
     @OnClick(R.id.btn_location)
     public void onViewClicked() {
-
-        int searchMode = 0;
-        int[] fcnArray = FormatUtils.getInstance().getDefaultFcn(1);
-//        LteSendManager.searchCell(1,"15968875154",searchMode,fcnArray,"","");
-        LteSendManager.searchCell(1,"15167168495",searchMode,fcnArray,"","");
-        //增益
-//        LteSendManager.setPower((byte) 0);
-//
-//        LteSendManager.sendData(MsgType.SEND_SERVER_HEART_BEAT);
-//        LteSendManager.sendData(MsgType.SEND_SHOW_VERSION);
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
-            }
-        },3000);
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                LteSendManager.startTrigger();
-            }
-        },5000,5000);
     }
 }

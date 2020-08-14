@@ -7,7 +7,7 @@ import java.util.Arrays;
  * Email：1993911441@qq.com
  * Describe：数据包
  */
-public class LtePackage {
+public class LTEPackage {
     private byte[] magic = new byte[4];  //默认：00 FF FF 00   4字节
     private int id;     //自增序列   4字节
     private int dataLength;    //数据长度（消息内容部分）   4字节
@@ -22,7 +22,7 @@ public class LtePackage {
 
     public static final int HEAD_SIZE = 82;  //包头长度  82字节
 
-    public LtePackage() {
+    public LTEPackage() {
     }
 
 

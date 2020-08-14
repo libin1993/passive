@@ -19,12 +19,10 @@ import com.synway.passive.location.utils.SPUtils;
  */
 public class SplashActivity extends BaseActivity {
     private String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.READ_SMS};
+            Manifest.permission.ACCESS_COARSE_LOCATION,Manifest.permission.READ_PHONE_STATE};
     private String[][] permissionArray = {{Manifest.permission.WRITE_EXTERNAL_STORAGE, "读写"},
             {Manifest.permission.ACCESS_COARSE_LOCATION, "定位"},
-            {Manifest.permission.READ_PHONE_STATE, "读取手机状态"},
-            {Manifest.permission.READ_SMS, "读取手机状态"}};
+            {Manifest.permission.READ_PHONE_STATE, "读取手机状态"}};
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -40,7 +38,6 @@ public class SplashActivity extends BaseActivity {
     }
 
     private void getPermissions() {
-
         if (PermissionUtils.getInstance().hasPermission(this, permissions)) {
             startActivity(new Intent(SplashActivity.this, LoginActivity.class));
             finish();

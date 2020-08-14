@@ -1,6 +1,448 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
-</LinearLayout>
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/black"
+        android:paddingBottom="80dp">
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:text="@string/settings"
+            android:textColor="@color/white"
+            android:textSize="27dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/clUser"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/bound_gray_10dp"
+            android:paddingBottom="5dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTitle">
+
+            <ImageView
+                android:id="@+id/ivUser"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
+                android:src="@mipmap/icon_avatar"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tvUserName"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:text="admin"
+                android:textColor="@color/white"
+                android:textSize="18dp"
+                app:layout_constraintBottom_toBottomOf="@id/ivUser"
+                app:layout_constraintLeft_toRightOf="@+id/ivUser"
+                app:layout_constraintTop_toTopOf="@id/ivUser"></TextView>
+
+            <View
+                android:id="@+id/v_slice"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="5dp"
+                android:background="@color/black"
+                app:layout_constraintBottom_toTopOf="@+id/tvUser"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ivUser" />
+
+            <ImageView
+                android:id="@+id/ivUserManage"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginLeft="5dp"
+                android:src="@mipmap/icon_manage_user"
+                app:layout_constraintBottom_toBottomOf="@+id/tvUser"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintLeft_toLeftOf="@id/v_slice"
+                app:layout_constraintTop_toTopOf="@id/tvUser" />
+
+            <TextView
+                android:id="@+id/tvUser"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="5dp"
+                android:drawableRight="@drawable/ic_arrow_right"
+                android:gravity="center_vertical"
+                android:paddingLeft="50dp"
+                android:text="@string/user_manage"
+                android:textColor="@color/white"
+                android:textSize="15dp"
+                app:layout_constraintLeft_toLeftOf="@+id/ivUserManage"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/v_slice" />
+        </android.support.constraint.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/tvBluetooth"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/bound_gray_5dp"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:gravity="center_vertical"
+            android:paddingLeft="60dp"
+            android:text="@string/bluetooth"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/clUser" />
+
+        <ImageView
+            android:id="@+id/ivBluetooth"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@mipmap/icon_bluetooth"
+            app:layout_constraintBottom_toBottomOf="@+id/tvBluetooth"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintLeft_toLeftOf="@id/tvBluetooth"
+            app:layout_constraintTop_toTopOf="@id/tvBluetooth" />
+
+        <TextView
+            android:id="@+id/tvInductionSetting"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/round_top_gray_5dp"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:gravity="center_vertical"
+            android:paddingLeft="60dp"
+            android:text="@string/induction_settings"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvBluetooth" />
+
+        <ImageView
+            android:id="@+id/ivInducementSetting"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@mipmap/icon_induction_setting"
+            app:layout_constraintBottom_toBottomOf="@+id/tvInductionSetting"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintLeft_toLeftOf="@id/tvInductionSetting"
+            app:layout_constraintTop_toTopOf="@id/tvInductionSetting" />
+
+        <View
+            android:id="@+id/v_slice_induction"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:background="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/tvInductionSetting"
+            app:layout_constraintLeft_toLeftOf="@+id/tvInductionSetting"
+            app:layout_constraintRight_toRightOf="@+id/tvInductionSetting" />
+
+        <TextView
+            android:id="@+id/tvDetectSetting"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/locate_item_bg"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:gravity="center_vertical"
+            android:paddingLeft="60dp"
+            android:text="@string/detect_settings"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/v_slice_induction" />
+
+        <ImageView
+            android:id="@+id/ivDetectSetting"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@mipmap/icon_detect_setting"
+            app:layout_constraintBottom_toBottomOf="@+id/tvDetectSetting"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintLeft_toLeftOf="@id/tvDetectSetting"
+            app:layout_constraintTop_toTopOf="@id/tvDetectSetting" />
+
+        <View
+            android:id="@+id/v_slice_detect"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:background="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/tvDetectSetting"
+            app:layout_constraintLeft_toLeftOf="@+id/tvDetectSetting"
+            app:layout_constraintRight_toRightOf="@+id/tvDetectSetting" />
+
+        <TextView
+            android:id="@+id/tvManagePhoneNumberList"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/round_bottom_gray_5dp"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:gravity="center_vertical"
+            android:paddingLeft="60dp"
+            android:text="@string/name_list_manage"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDetectSetting" />
+
+        <ImageView
+            android:id="@+id/ivNameListSetting"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@mipmap/icon_manage_list"
+            app:layout_constraintBottom_toBottomOf="@+id/tvManagePhoneNumberList"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintLeft_toLeftOf="@id/tvManagePhoneNumberList"
+            app:layout_constraintTop_toTopOf="@+id/tvManagePhoneNumberList" />
+
+        <TextView
+            android:id="@+id/tvSystemSetting"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/round_top_gray_5dp"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:gravity="center_vertical"
+            android:paddingLeft="60dp"
+            android:text="@string/system_settings"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvManagePhoneNumberList" />
+
+        <ImageView
+            android:id="@+id/ivSystemSetting"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@mipmap/icon_induction_setting"
+            app:layout_constraintBottom_toBottomOf="@+id/tvSystemSetting"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintLeft_toLeftOf="@id/tvSystemSetting"
+            app:layout_constraintTop_toTopOf="@id/tvSystemSetting" />
+
+        <View
+            android:id="@+id/v_slice_system_setting"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:background="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/tvSystemSetting"
+            app:layout_constraintLeft_toLeftOf="@+id/tvSystemSetting"
+            app:layout_constraintRight_toRightOf="@+id/tvSystemSetting" />
+
+        <TextView
+            android:id="@+id/tvAuthorizationHistory"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/locate_item_bg"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:gravity="center_vertical"
+            android:paddingLeft="60dp"
+            android:text="@string/authorization_history"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/v_slice_authorization" />
+
+        <ImageView
+            android:id="@+id/ivAuthorizationHistory"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@mipmap/icon_manage_list"
+            app:layout_constraintBottom_toBottomOf="@+id/tvAuthorizationHistory"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintLeft_toLeftOf="@id/tvAuthorizationHistory"
+            app:layout_constraintTop_toTopOf="@id/tvAuthorizationHistory" />
+
+        <View
+            android:id="@+id/v_slice_authorization_history"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:background="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/tvAuthorizationHistory"
+            app:layout_constraintLeft_toLeftOf="@+id/tvAuthorizationHistory"
+            app:layout_constraintRight_toRightOf="@+id/tvAuthorizationHistory" />
+
+        <TextView
+            android:id="@+id/tvDebugTools"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/locate_item_bg"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:gravity="center_vertical"
+            android:paddingLeft="60dp"
+            android:text="@string/debug_tools"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/v_slice_authorization_history" />
+
+        <ImageView
+            android:id="@+id/ivDebugTools"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@mipmap/ic_launcher_round"
+            app:layout_constraintBottom_toBottomOf="@+id/tvDebugTools"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintLeft_toLeftOf="@id/tvDebugTools"
+            app:layout_constraintTop_toTopOf="@id/tvDebugTools" />
+
+        <View
+            android:id="@+id/v_slice_debug_tools"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:background="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/tvDebugTools"
+            app:layout_constraintLeft_toLeftOf="@+id/tvDebugTools"
+            app:layout_constraintRight_toRightOf="@+id/tvDebugTools" />
+
+        <TextView
+            android:id="@+id/tvAuthorization"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/locate_item_bg"
+            android:drawableRight="@drawable/ic_arrow_right"
+            android:gravity="center_vertical"
+            android:paddingLeft="60dp"
+            android:text="@string/authorization"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/v_slice_system_setting" />
+
+        <ImageView
+            android:id="@+id/ivAuthorization"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@mipmap/icon_detect_setting"
+            app:layout_constraintBottom_toBottomOf="@+id/tvAuthorization"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintLeft_toLeftOf="@id/tvAuthorization"
+            app:layout_constraintTop_toTopOf="@id/tvAuthorization" />
+
+        <View
+            android:id="@+id/v_slice_authorization"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:background="@color/black"
+            app:layout_constraintBottom_toBottomOf="@+id/tvAuthorization"
+            app:layout_constraintLeft_toLeftOf="@+id/tvAuthorization"
+            app:layout_constraintRight_toRightOf="@+id/tvAuthorization" />
+
+        <TextView
+            android:id="@+id/tvEightZoneSwitcher"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/round_bottom_gray_5dp"
+            android:gravity="center_vertical"
+            android:paddingLeft="60dp"
+            android:text="@string/eight_zones_switcher"
+            android:textColor="@color/white"
+            android:textSize="15dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/v_slice_debug_tools" />
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:id="@+id/eightZoneEnable"
+            app:layout_constraintTop_toTopOf="@id/tvEightZoneSwitcher"
+            app:layout_constraintBottom_toBottomOf="@id/tvEightZoneSwitcher"
+            app:layout_constraintRight_toRightOf="@id/tvEightZoneSwitcher"></Switch>
+
+        <ImageView
+            android:id="@+id/ivEightZoneSwitcher"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="5dp"
+            android:src="@mipmap/ic_launcher_round"
+            app:layout_constraintBottom_toBottomOf="@+id/tvEightZoneSwitcher"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintLeft_toLeftOf="@id/tvEightZoneSwitcher"
+            app:layout_constraintTop_toTopOf="@+id/tvEightZoneSwitcher" />
+
+    </android.support.constraint.ConstraintLayout>
+</android.support.v4.widget.NestedScrollView>

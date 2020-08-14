@@ -1,20 +1,12 @@
 package com.synway.passive.location.socket;
 
 
-import com.synway.passive.location.bean.CellBean;
-import com.synway.passive.location.bean.DeviceStatus;
-import com.synway.passive.location.bean.DeviceStatusBean;
-import com.synway.passive.location.bean.LocationInfoBean;
 import com.synway.passive.location.utils.CacheManager;
 import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LogUtils;
-import com.synway.passive.location.utils.ToastUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * Author：Libin on 2020/6/10 11:05
@@ -79,8 +71,7 @@ public class LteReceiveManager {
         if (tempPackage.length < 82)
             return;
 
-
-        LtePackage ltePackage = new LtePackage();
+        LTEPackage ltePackage = new LTEPackage();
 
         //magic  默认
         byte[] tempMagic = new byte[4];
@@ -132,164 +123,93 @@ public class LteReceiveManager {
         System.arraycopy(tempPackage, 66, tempReserve, 0, 16);
         ltePackage.setReserve(tempReserve);
 
-        LogUtils.log("接收数据类型：" + Integer.toHexString(ltePackage.getType()));
-        LogUtils.log("接收数据："+FormatUtils.getInstance().bytesToHexString(tempPackage));
-
+        LogUtils.log("消息类型：" + ltePackage.getType());
         //包内容
         if (dataLength > 0) {
             byte[] tempData = new byte[dataLength];
             System.arraycopy(tempPackage, 82, tempData, 0, dataLength);
             ltePackage.setData(tempData);
+            LogUtils.log(FormatUtils.bytesToHexString(tempData));
 
+
+            if (ltePackage.getType() == MsgType.RCV_SHOW_VERSION) {
+                byte[] a = new byte[tempData.length - 1];
+                System.arraycopy(tempData, 1, a, 0, tempData.length - 1);
+                LogUtils.log(FormatUtils.bytesToHexString(a));
+                String b = new String(a, StandardCharsets.UTF_8);
+                LogUtils.log(b);
+
+            }
         }
+
+        LteSendManager.sendData(MsgType.SEND_SERVER_HEART_BEAT);
+        LteSendManager.sendData(MsgType.SEND_SHOW_VERSION);
+
+
+
+
+//        if (ltePackage.getType() == 0xA3){
+//            byte[] a = new byte[tempData.length - 4];
+//            System.arraycopy(tempData, 4, a, 0, tempData.length - 4);
+//            LogUtils.log(FormatUtils.bytesToHexString(a));
+//            try {
+//                String b= new String(a,"utf-8");
+//
+//            } catch (UnsupportedEncodingException e) {
+//                e.printStackTrace();
+//            }
+//
+//
+//            LTESendManager.sendData(MsgType.SEND_SERVER_HEART_BEAT,null);
+//
+//        }
 
 
         LogUtils.log(ltePackage.toString());
-        msgType(ltePackage);
+
 
     }
 
-    /**
-     * @param ltePackage  消息类型
-     */
-    public void msgType(LtePackage ltePackage){
-            switch (ltePackage.getType()){
-                case MsgType.RCV_SERVER_HEART_BEAT:
-                    break;
-                case MsgType.RCV_SHOW_VERSION:
-                    parseVersion(ltePackage);
-                    break;
-                case MsgType.RCV_DEVICE_STATUS:
-                    parseDeviceStatus(ltePackage);
-                    break;
-                case MsgType.RCV_CELL_SEARCH:
-                    parseCommon(ltePackage);
-                    break;
-                case MsgType.RCV_CELL_INFO:
-                    parseCell(ltePackage);
-                    break;
-                case MsgType.RCV_LOCATION_CMD:
-                    parseCommon(ltePackage);
 
-//                    LteSendManager.stopTrigger();
-                    break;
-                case MsgType.RCV_LOCATION_INFO:
-                    parseLocation(ltePackage);
-                    break;
-                case MsgType.RCV_TRIGGER_ACK:
-                    parseCommon(ltePackage);
-                    break;
-                case MsgType.RCV_SET_POWERLEV:
-                    parseCommon(ltePackage);
-                    break;
+    /**
+     * 将字节数组转换为String
+     *
+     * @param tempValue
+     * @return
+     */
+    public static String bytesToString(byte[] tempValue) {
+        StringBuffer result = new StringBuffer();
+        if (tempValue == null || tempValue.length == 0) {
+            return "";
+        }
+        int length = tempValue.length;
+
+        for (int i = 0; i < length; i++) {
+            result.append((char) (tempValue[i] & 0xff));
+        }
+        return result.toString();
+    }
+
+    /**
+     * byte[] 转16进制
+     *
+     * @param tempValue
+     * @return
+     */
+    public static String bytesToHexString(byte[] tempValue) {
+        StringBuilder stringBuilder = new StringBuilder();
+        if (tempValue == null || tempValue.length <= 0) {
+            return null;
+        }
+        for (int i = 0; i < tempValue.length; i++) {
+            int v = tempValue[i] & 0xFF;
+            String hv = Integer.toHexString(v);
+            if (hv.length() < 2) {
+                stringBuilder.append(0);
             }
-
-    }
-
-    /**
-     * 常规消息接收
-     */
-    private void parseCommon(LtePackage ltePackage){
-        LogUtils.log(ltePackage.getType()+":"+FormatUtils.getInstance().byteToInt(ltePackage.getData()));
-    }
-
-    /**
-     * @param ltePackage
-     */
-    private void parseCell(LtePackage ltePackage){
-        byte[] data = ltePackage.getData();
-
-        byte[] tempCellNum = new byte[4];
-        System.arraycopy(data, 0, tempCellNum, 0, 4);
-        FormatUtils.getInstance().reverseData(tempCellNum);
-        int cellNum = FormatUtils.getInstance().byteToInt(tempCellNum);
-        LogUtils.log("小区数量："+cellNum);
-
-        byte[] cellBytes = new byte[ltePackage.getDataLength() - 4];
-        System.arraycopy(data, 4, cellBytes, 0, ltePackage.getDataLength() - 4);
-
-        for (int i = 0; i < cellNum; i++) {
-            CellBean cellBean = new CellBean();
-            cellBean.setVendor(cellBytes[21*i]);
-            cellBean.setProtocol(cellBytes[21*i+1]);
-            cellBean.setFreq(FormatUtils.getInstance().byteToShort(new byte[]{cellBytes[21*i+3],cellBytes[21*i+2]}) & 0x0FFFF);
-            cellBean.setLac(FormatUtils.getInstance().byteToShort(new byte[]{cellBytes[21*i+5],cellBytes[21*i+4]})& 0x0FFFF);
-            cellBean.setCid(FormatUtils.getInstance().byteToInt(new byte[]{cellBytes[21*i+9],cellBytes[21*i+8],cellBytes[21*i+7],cellBytes[21*i+6]}));
-            cellBean.setPci(FormatUtils.getInstance().byteToShort(new byte[]{cellBytes[21*i+11],cellBytes[21*i+10]})& 0x0FFFF);
-            cellBean.setDbm(FormatUtils.getInstance().byteToShort(new byte[]{cellBytes[21*i+13],cellBytes[21*i+12]}));
-            cellBean.setSnr(cellBytes[21*i+14]);
-            cellBean.setOffset(FormatUtils.getInstance().byteToInt(new byte[]{cellBytes[21*i+18],cellBytes[21*i+17],cellBytes[21*i+16],cellBytes[21*i+15]}));
-            cellBean.setStatus(cellBytes[21*i+19]);
-            cellBean.setStateType(cellBytes[21*i+20]);
-
-            cellBean.setCellColorFlag(cellBytes[i+840]);
-            cellBean.setCellErrorRate(cellBytes[i+880]);
-            cellBean.setHit(cellBytes[i+1120]);
-
-            LogUtils.log(cellBean.toString());
-
-           CacheManager.cellMap.put(cellBean.getLac()+","+cellBean.getCid(),cellBean);
-
+            stringBuilder.append(hv);
         }
-    }
-
-
-
-    /**
-     * @param ltePackage 定位数据上报
-     */
-    public  void parseLocation(LtePackage ltePackage){
-        LocationInfoBean locationBean = new LocationInfoBean();
-        byte[] locationBytes = ltePackage.getData();
-
-
-//        byte[] locationBytes = FormatUtils.getInstance().hexStringToBytes("269814580AA30406BDFF0000000000000000000000000000000013000000000000000000000082005400E8C9FFFFC15C72630000000000000000000000000000000000000000000000000000000000000000012700");
-
-        locationBean.setFreq(FormatUtils.getInstance().byteToShort(new byte[]{locationBytes[1],locationBytes[0]}) & 0x0FFFF);
-        locationBean.setLac(FormatUtils.getInstance().byteToShort(new byte[]{locationBytes[3],locationBytes[2]}) & 0x0FFFF);
-        locationBean.setCid(FormatUtils.getInstance().byteToInt(new byte[]{locationBytes[7],locationBytes[6],locationBytes[5],locationBytes[4]}));
-        locationBean.setPowerOverFlow(locationBytes[37]);
-        List<Float> powerList = new ArrayList<>();
-        for (int i = 0; i < 9; i++) {
-            float power = FormatUtils.getInstance().bytes2Float(new byte[]{locationBytes[46+4*i],locationBytes[47+4*i],locationBytes[48+4*i],locationBytes[49+4*i]});
-
-            LogUtils.log("能量值："+power);
-            powerList.add(power);
-        }
-        locationBean.setPower(powerList);
-        locationBean.setColor(locationBytes[82]);
-        locationBean.setPci(FormatUtils.getInstance().byteToShort(new byte[]{locationBytes[84],locationBytes[83]}) & 0x0FFFF);
-
-        LogUtils.log("定位数据上报:"+locationBean.toString());
-    }
-
-    /**
-     * @param ltePackage 版本
-     */
-    private void parseVersion(LtePackage ltePackage){
-        byte[] versionBytes = new byte[ltePackage.getDataLength() - 1];
-        System.arraycopy(ltePackage.getData(), 1, versionBytes, 0, ltePackage.getDataLength() - 1);
-        String version = new String(versionBytes, StandardCharsets.UTF_8);
-        LogUtils.log("版本："+version);
-    }
-
-    /**
-     * @param ltePackage 设备状态
-     */
-    private void parseDeviceStatus(LtePackage ltePackage){
-        byte[] data = ltePackage.getData();
-        DeviceStatusBean deviceStatus = new DeviceStatusBean();
-        deviceStatus.setStatus(data[0]);
-        deviceStatus.setTemperatureDIG(data[1]);
-        deviceStatus.setTemperatureRF(data[2]);
-        deviceStatus.setElectricity(data[3]);
-
-
-        byte[] msgBytes = new byte[ltePackage.getDataLength()-4];
-        System.arraycopy(ltePackage.getData(), 4, msgBytes, 0, ltePackage.getDataLength() - 4);
-        String msg = new String(msgBytes, StandardCharsets.UTF_8);
-        deviceStatus.setMsg(msg);
-        LogUtils.log("设备状态："+deviceStatus.toString());
+        return stringBuilder.toString();
     }
 
 

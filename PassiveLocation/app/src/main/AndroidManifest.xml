@@ -24,14 +24,19 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
         <activity android:name=".ui.SplashActivity">
+
+        </activity>
+        <activity android:name=".TestActivity1" />
+        <activity android:name=".ui.MainActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".TestActivity1" />
-        <activity android:name=".ui.MainActivity" />
+        <activity android:name=".ui.InductionSettingActivity"/>
+        <activity android:name=".ui.DetectSettingActivity"/>
+        <activity android:name=".ui.PhoneNumberManageActivity"/>
         <activity android:name=".ui.LoginActivity" />
         <activity android:name=".TestActivity" />
     </application>

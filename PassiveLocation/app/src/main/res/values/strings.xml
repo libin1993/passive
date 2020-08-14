@@ -2,4 +2,63 @@
     <string name="app_name">PassiveLocation</string>
     <string name="account_rule">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
     <string name="number_rule">0123456789</string>
+<!--    定位 页面-->
+    <string name="locate_title">定位</string>
+    <string name="energy_info">能量信息</string>
+    <string name="energy_trend">能量趋势</string>
+    <string name="low_input_gain">低增益</string>
+    <string name="medium_input_gain">中增益</string>
+    <string name="high_input_gain">高增益</string>
+    <string name="smart">智能</string>
+    <string name="induction_hit_count">命中%1$d次</string>
+    <string name="start_induction">开始诱发</string>
+<!-- 设置 页面   -->
+    <string name="settings">设置</string>
+
+    <string name="user_manage">用户管理</string>
+
+    <string name="bluetooth">蓝牙</string>
+
+    <string name="induction_settings">诱因设置</string>
+    <string name="detect_settings">检测设置</string>
+    <string name="name_list_manage">名单管理</string>
+
+    <string name="system_settings">系统设置</string>
+    <string name="authorization">授权查看</string>
+    <string name="authorization_history">授权历史记录查看</string>
+    <string name="debug_tools">调试工具集(高级)</string>
+    <string name="eight_zones_switcher">8小区开关</string>
+
+    <string name="about_us">关于我们</string>
+<!--    诱发设置 页面-->
+    <string name="induction_title">诱发设置</string>
+    <string name="induction_mode_title">诱发制式:</string>
+    <string name="induction_message_title">短信诱发:</string>
+    <string name="message_count">次数</string>
+    <string name="message_count_unit">次</string>
+    <string name="message_timeout">超时</string>
+    <string name="millisecond">ms</string>
+    <string name="message_interval">间隔</string>
+<!-- 检测设置 页面   -->
+    <string name="detect_setting_title">检测设置</string>
+    <string name="state_detect">状态监测</string>
+    <string name="detect_wait_time">等待时间</string>
+    <string name="detect_notify_phone_number">通知号码</string>
+    <string name="detect_result">检测结果</string>
+    <string name="start_detect">开始检测</string>
+    <string name="stop_detect">停止检测</string>
+<!--    名单管理 页面-->
+    <string name="phone_number_manage_title">名单管理</string>
+    <string name="phone_number_list_order">序号</string>
+    <string name="phone_number_list_name">名称</string>
+    <string name="phone_number_list_number">号码</string>
+    <string name="phone_number_list_remark">备注</string>
+    <string name="add">添加</string>
+<!-- 搜索失败 对话框-->
+    <string name="number">NO</string>
+    <string name="frequency_point">频点</string>
+    <string name="lac">LAC</string>
+    <string name="cid">CID</string>
+    <string name="pci">pci</string>
+
 </resources>

@@ -8,15 +8,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@android:color/darker_gray">
+        android:background="#1C1C21">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@drawable/bound_gray_5dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp"
+            android:background="@color/locate_item"
             android:orientation="horizontal">
 
             <TextView
@@ -43,16 +43,16 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@drawable/bound_gray_5dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp"
+            android:background="@color/locate_item"
             android:orientation="horizontal">
             <TextView
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:text="号码"
                 android:layout_centerVertical="true"
                 android:paddingLeft="12dp"/>
@@ -64,18 +64,24 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="3dp"
                 android:layout_marginLeft="100dp"
+                android:drawableRight="@drawable/ic_arrow_right"
                 android:singleLine="true"
                 android:maxLength="11"
                 android:paddingLeft="12dp"
                 android:inputType="phone"
                 android:digits="@string/number_rule"
                 android:background="@drawable/bound_dark_gray_5dp"/>
-
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="50dp"
+                android:layout_height="match_parent"
+                android:id="@+id/clToManagePhoneNumberList"
+                android:layout_alignRight="@+id/et_phone_number"/>
         </RelativeLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@drawable/bound_gray_5dp"
+            android:background="@color/locate_item"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp"
@@ -104,7 +110,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@drawable/bound_gray_5dp"
+            android:background="@color/locate_item"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp"
@@ -133,7 +139,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@drawable/bound_gray_5dp"
+            android:background="@color/locate_item"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp">
@@ -170,7 +176,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@drawable/bound_gray_5dp"
+            android:background="@color/locate_item"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp"
