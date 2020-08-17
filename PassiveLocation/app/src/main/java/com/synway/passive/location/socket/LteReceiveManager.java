@@ -185,6 +185,12 @@ public class LteReceiveManager {
             case MsgType.RCV_SET_POWERLEV:
                 parseCommon(ltePackage);
                 break;
+            case MsgType.RCV_MONITOR_CMD:
+                parseCommon(ltePackage);
+                break;
+            case MsgType.RCV_TARGET_CELL_SET_ACK:
+                parseCommon(ltePackage);
+                break;
         }
 
     }
@@ -198,11 +204,27 @@ public class LteReceiveManager {
             case MsgType.RCV_LOCATION_CMD:
                 LoadingUtils.getInstance().dismiss();
                 if (status == 0){
-                    EventBus.getDefault().post("locationSuccess");
+                    EventBus.getDefault().post(MsgType.LOCATION_SUCCESS);
                     CacheManager.isLocation = true;
                 }else {
-                    ToastUtils.getInstance().showToastOnThread("定位失败");
+                    EventBus.getDefault().post(MsgType.LOCATION_FAIL);
                     CacheManager.isLocation = false;
+                }
+                break;
+            case MsgType.RCV_MONITOR_CMD:
+                LoadingUtils.getInstance().dismiss();
+                if (status == 0){
+                    EventBus.getDefault().post(MsgType.MONITOR_SUCCESS);
+                }else {
+                    EventBus.getDefault().post(MsgType.MONITOR_FAIL);
+                }
+                break;
+            case MsgType.RCV_TRIGGER_ACK:
+                LoadingUtils.getInstance().dismiss();
+                if (status == 0){
+                    EventBus.getDefault().post(MsgType.TRIGGER_SUCCESS);
+                }else {
+                    EventBus.getDefault().post(MsgType.TRIGGER_FAIL);
                 }
                 break;
         }
@@ -244,15 +266,17 @@ public class LteReceiveManager {
 
             LogUtils.log(cellBean.toString());
 
+            CacheManager.cellMap.put(cellBean.getLac()+","+cellBean.getCid(),cellBean);
+
+            LogUtils.log("目标："+CacheManager.lac+","+CacheManager.cid+";搜索到的小区："+cellBean.getLac()+","+cellBean.getCid());
             if (String.valueOf(cellBean.getLac()).equals(CacheManager.lac) &&  String.valueOf(cellBean.getCid()).equals(CacheManager.cid)){
-                EventBus.getDefault().post("searchSuccess");
+                EventBus.getDefault().post(MsgType.SEARCH_SUCCESS);
             }
 
-            CacheManager.cellMap.put(cellBean.getLac()+","+cellBean.getCid(),cellBean);
+
 
         }
 
-        LogUtils.log("小区个数："+CacheManager.cellMap.size());
     }
 
 

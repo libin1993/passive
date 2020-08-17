@@ -1,182 +1,166 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/black"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-    <ImageView
-        android:layout_width="40dp"
+    android:orientation="vertical">
+
+    <include layout="@layout/layout_title" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginLeft="10dp"
-        android:id="@+id/ivBack"
-        app:layout_constraintLeft_toLeftOf="parent"
-        android:src="@drawable/ic_arrow_left"
-        app:layout_constraintTop_toTopOf="@+id/tvTitle"
-        app:layout_constraintBottom_toBottomOf="@id/tvTitle"/>
-    <TextView
-        android:id="@+id/tvTitle"
-        android:layout_width="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginRight="12dp"
+        android:background="@drawable/bound_2a2_5dp">
+
+        <TextView
+            android:id="@+id/tv_trigger_style"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:gravity="center_vertical"
+            android:text="诱发格式"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+        <Spinner
+            android:id="@+id/spinner_trigger_style"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="3dp"
+            android:layout_toRightOf="@id/tv_trigger_style"
+            android:background="@drawable/bound_gray_40_5dp"
+            android:gravity="center_vertical"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:dropDownVerticalOffset="34dp"/>
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
         android:layout_marginTop="30dp"
-        android:text="@string/induction_title"
-        android:textColor="@color/white"
-        android:textSize="27dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_marginLeft="5dp"
-        android:background="@color/locate_item"
-        android:gravity="center_vertical"
-        app:layout_constraintTop_toBottomOf="@+id/tvTitle"
-        app:layout_constraintLeft_toLeftOf="@+id/clMessageOptions"
-        android:textSize="15dp"
-        android:padding="10dp"
-        android:id="@+id/tvInductionModeTitle"
-        android:textColor="@color/white"
-        android:text="@string/induction_mode_title"/>
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:background="@color/locate_item_bg"
-        android:padding="10dp"
-        android:gravity="center"
-        android:textSize="15dp"
-        app:layout_constraintLeft_toRightOf="@+id/tvInductionModeTitle"
-        app:layout_constraintTop_toTopOf="@+id/tvInductionModeTitle"
-        app:layout_constraintBottom_toBottomOf="@+id/tvInductionModeTitle"
-        android:entries="@array/induction_modes"/>
+        android:layout_marginRight="12dp"
+        android:background="@drawable/bound_2a2_5dp"
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/tvMessageInductionTitle"
-        app:layout_constraintTop_toBottomOf="@+id/tvInductionModeTitle"
-        app:layout_constraintLeft_toLeftOf="@+id/tvInductionModeTitle"
-        android:textColor="@color/white"
-        android:layout_marginLeft="5dp"
-        android:text="@string/induction_message_title"
-        android:layout_marginTop="50dp"
-        android:textSize="15dp"/>
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/clMessageOptions"
-        app:layout_constraintTop_toBottomOf="@+id/tvMessageInductionTitle"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/locate_item"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="@string/message_count"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:textSize="18dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:id="@+id/tvMessageCount"/>
-        <Spinner
-            android:layout_width="80dp"
-            android:layout_height="0dp"
-            android:id="@+id/spMessageCount"
-            android:layout_marginLeft="10dp"
-            android:background="@color/locate_item_bg"
-            android:entries="@array/induction_message_count"
-            android:gravity="center"
-            app:layout_constraintTop_toTopOf="@+id/tvMessageCount"
-            app:layout_constraintBottom_toBottomOf="@+id/tvMessageCount"
-            app:layout_constraintLeft_toRightOf="@+id/tvMessageCount"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="@string/message_count_unit"
-            android:textSize="18dp"
-            android:layout_marginLeft="10dp"
-            app:layout_constraintLeft_toRightOf="@+id/spMessageCount"
-            app:layout_constraintTop_toTopOf="@+id/tvMessageCount"
-            app:layout_constraintBottom_toBottomOf="@+id/tvMessageCount"
-            android:id="@+id/tvMessageCountUnit"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:text="@string/message_count"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <Spinner
+                android:id="@+id/spinner_trigger_times"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:background="@color/gray_40"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:dropDownVerticalOffset="34dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="@string/message_count_unit"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:text="超时"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <Spinner
+                android:id="@+id/spinner_trigger_timeout"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:background="@color/gray_40"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:dropDownVerticalOffset="34dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="20dp"
+                android:text="秒"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/black" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:text="间隔"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+            <Spinner
+                android:id="@+id/spinner_trigger_interval"
+                android:layout_width="80dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="10dp"
+                android:background="@color/gray_40"
+                android:gravity="center"
+                android:textColor="@android:color/white"
+                android:textSize="14sp"
+                android:dropDownVerticalOffset="34dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="秒"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+        </LinearLayout>
 
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="@string/message_timeout"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="10dp"
-            android:textSize="18dp"
-            app:layout_constraintRight_toLeftOf="@+id/spMessageTimeout"
-            app:layout_constraintTop_toTopOf="parent"
-            android:id="@+id/tvMessageTimeout"/>
-        <Spinner
-            android:layout_width="80dp"
-            android:layout_height="0dp"
-            android:id="@+id/spMessageTimeout"
-            android:layout_marginRight="10dp"
-            android:background="@color/locate_item_bg"
-            android:entries="@array/induction_message_timeout"
-            android:gravity="center"
-            app:layout_constraintTop_toTopOf="@+id/tvMessageCount"
-            app:layout_constraintBottom_toBottomOf="@+id/tvMessageCount"
-            app:layout_constraintRight_toLeftOf="@+id/tvMessageTimeoutUnit"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="@string/millisecond"
-            android:textSize="18dp"
-            android:layout_marginRight="10dp"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/tvMessageTimeout"
-            app:layout_constraintBottom_toBottomOf="@+id/tvMessageTimeout"
-            android:id="@+id/tvMessageTimeoutUnit"/>
+    </LinearLayout>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginBottom="10dp"
-            android:text="@string/message_interval"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="10dp"
-            android:textSize="18dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvMessageCount"
-            android:id="@+id/tvMessageInterval"/>
-        <Spinner
-            android:layout_width="80dp"
-            android:layout_height="0dp"
-            android:id="@+id/spMessageInterval"
-            android:layout_marginLeft="10dp"
-            android:background="@color/locate_item_bg"
-            android:entries="@array/induction_message_interval"
-            android:gravity="center"
-            app:layout_constraintTop_toTopOf="@+id/tvMessageInterval"
-            app:layout_constraintBottom_toBottomOf="@+id/tvMessageInterval"
-            app:layout_constraintLeft_toRightOf="@+id/tvMessageInterval"/>
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="@string/millisecond"
-            android:textSize="18dp"
-            android:layout_marginLeft="10dp"
-            app:layout_constraintLeft_toRightOf="@+id/spMessageInterval"
-            app:layout_constraintTop_toTopOf="@+id/spMessageInterval"
-            app:layout_constraintBottom_toBottomOf="@+id/spMessageInterval"
-            android:id="@+id/tvMessageIntervalUnit"/>
-
-    </android.support.constraint.ConstraintLayout>
-
-</android.support.constraint.ConstraintLayout>
+</LinearLayout>

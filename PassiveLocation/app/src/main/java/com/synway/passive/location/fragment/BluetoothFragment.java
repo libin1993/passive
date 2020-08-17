@@ -24,7 +24,6 @@ import com.synway.passive.location.bean.BluetoothStatus;
 import com.synway.passive.location.bean.DeviceStatus;
 import com.synway.passive.location.receiver.BluetoothReceiver;
 import com.synway.passive.location.socket.BluetoothSocketUtils;
-import com.synway.passive.location.ui.MainActivity;
 import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LoadingUtils;
 import com.synway.passive.location.widget.RVDividerItemDecoration;
@@ -90,7 +89,7 @@ public class BluetoothFragment extends BaseFragment {
 
         rvBluetooth.setLayoutManager(new LinearLayoutManager(getParentFragment().getActivity()));
         rvBluetooth.addItemDecoration(new RVDividerItemDecoration(getParentFragment().getActivity(),
-                FormatUtils.getInstance().dp2px(8), R.drawable.rv_divider_black));
+                FormatUtils.getInstance().dp2px(8), R.drawable.rv_divider_black_horrizontal));
         adapter = new BaseQuickAdapter<BluetoothBean, BaseViewHolder>(R.layout.layout_bluetooth_item, bluetoothList) {
             @Override
             protected void convert(BaseViewHolder helper, BluetoothBean item) {
@@ -108,11 +107,9 @@ public class BluetoothFragment extends BaseFragment {
                 device = bluetoothAdapter.getRemoteDevice(bluetoothBean.getAddress());
 
                 if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
-                    if ((getParentFragment().getActivity()) != null) {
-                        hasBond = true;
-                        LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(),"正在连接蓝牙");
-                        BluetoothSocketUtils.getInstance().connectBluetoothSocket(device); // 数据扔过去库
-                    }
+                    hasBond = true;
+                    LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(),"正在连接蓝牙");
+                    BluetoothSocketUtils.getInstance().connectBluetoothSocket(device); // 数据扔过去库
                 } else {
                     hasBond = false;
                     device.createBond();
@@ -190,10 +187,9 @@ public class BluetoothFragment extends BaseFragment {
                 tvConnectName.setText("设备连接蓝牙");
                 break;
             case DeviceStatus.BLUETOOTH_CONNECTED:
-                if ((getParentFragment().getActivity()) != null) {
-                    if (!hasBond)
-                        LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(),"正在连接蓝牙");
-                        BluetoothSocketUtils.getInstance().connectBluetoothSocket(device); // 数据扔过去库
+                if (!hasBond){
+                    LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(),"正在连接蓝牙");
+                    BluetoothSocketUtils.getInstance().connectBluetoothSocket(device); // 数据扔过去库
                 }
                 break;
             case DeviceStatus.BLUETOOTH_SOCKET_CONNECTED:

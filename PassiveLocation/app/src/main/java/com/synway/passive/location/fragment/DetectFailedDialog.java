@@ -15,6 +15,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
 import com.synway.passive.location.R;
 import com.synway.passive.location.bean.CellBean;
+import com.synway.passive.location.socket.MsgType;
 import com.synway.passive.location.utils.CacheManager;
 import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.StatusBarUtils;
@@ -59,7 +60,7 @@ public class DetectFailedDialog extends DialogFragment {
             cellList.add(entry.getValue());
         }
         rvPhoneHardwareInfo.setLayoutManager(new LinearLayoutManager(getContext()));
-        rvPhoneHardwareInfo.addItemDecoration(new RVDividerItemDecoration(getContext(),0,R.drawable.rv_divider_black));
+        rvPhoneHardwareInfo.addItemDecoration(new RVDividerItemDecoration(getContext(),0,R.drawable.rv_divider_black_horrizontal));
         adapter = new BaseQuickAdapter<CellBean, BaseViewHolder>(R.layout.layout_cell_item, cellList) {
             @Override
             protected void convert(BaseViewHolder helper, CellBean item) {
@@ -87,7 +88,7 @@ public class DetectFailedDialog extends DialogFragment {
                 break;
             case R.id.btn_research:
                 dismiss();
-                EventBus.getDefault().post("research");
+                EventBus.getDefault().post(MsgType.RESEARCH_CELL);
                 break;
         }
     }

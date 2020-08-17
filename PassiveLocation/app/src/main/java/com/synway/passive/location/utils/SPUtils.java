@@ -14,9 +14,14 @@ public class SPUtils {
 
     private static SPUtils mInstance;  //单例对象
 
-    public static final String ADMIN_ACCOUNT= "account"; //账号
+    public static final String ADMIN_ACCOUNT = "account"; //账号
 
     public static final String ADMIN_PASSWORD = "password"; //密码
+    public static final String TRIGGER_STYLE = "trigger_style";//诱发格式
+    public static final String TRIGGER_TIMES = "trigger_times";//诱发次数
+    public static final String TRIGGER_TIMEOUT = "trigger_timeout";//诱发超时时间
+    public static final String TRIGGER_INTERVAL = "trigger_interval";//诱发间隔
+    public static final String DETECT_INTERVAL = "detect_interval";//检测间隔
 
     private SharedPreferences sp;
 
@@ -78,6 +83,7 @@ public class SPUtils {
 
     /**
      * 得到指定文件中的key对应的value，如果没有则返回传递的默认值
+     *
      * @param key
      * @param defaultObject
      * @return
@@ -99,13 +105,29 @@ public class SPUtils {
         return null;
     }
 
+    public int getTriggerStyle() {
+        return sp.getInt(TRIGGER_STYLE, 2);
+    }
+    public int getTriggerTimes() {
+        return sp.getInt(TRIGGER_TIMES, 2);
+    }
+    public int getTriggerTimeout() {
+        return sp.getInt(TRIGGER_TIMEOUT, 0);
+    }
+    public int getTriggerInterval() {
+        return sp.getInt(TRIGGER_INTERVAL, 1);
+    }
+
+    public int getDetectInterval() {
+        return sp.getInt(DETECT_INTERVAL, 0);
+    }
 
     /**
      * 移除某个key值已经对应的值
      *
      * @param key
      */
-    public void remove( String key) {
+    public void remove(String key) {
         SharedPreferences.Editor editor = sp.edit();
         editor.remove(key);
         editor.clear();

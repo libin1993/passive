@@ -16,6 +16,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.Socket;
 import java.util.UUID;
 
@@ -68,15 +70,26 @@ public class BluetoothSocketUtils {
     class ClientThread extends Thread {
         @Override
         public void run(){
-            //创建一个socket尝试连接，UUID用正确格式的String来转换而成
+
             try {
-                bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-            } catch (IOException e) {
+                Method m = bluetoothDevice.getClass().getMethod("createRfcommSocket", new Class[] {int.class});
+                bluetoothSocket = (BluetoothSocket) m.invoke(bluetoothDevice, 1);
+            } catch (Exception e) {
                 e.printStackTrace();
+                LogUtils.log("创建BluetoothSocket失败："+e.toString());
             }
+
+
+            //创建一个socket尝试连接，UUID用正确格式的String来转换而成
+//            try {
+//
+//                bluetoothSocket = bluetoothDevice.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//                LogUtils.log("创建BluetoothSocket失败："+e.toString());
+//            }
             if (bluetoothSocket == null){
                 ToastUtils.getInstance().showToastOnThread("蓝牙连接失败");
-
                 return;
             }
 
@@ -90,9 +103,9 @@ public class BluetoothSocketUtils {
 
                     DeviceStatus.deviceStatus = DeviceStatus.BLUETOOTH_SOCKET_CONNECTED;
                     EventBus.getDefault().post(new BluetoothStatus(DeviceStatus.BLUETOOTH_SOCKET_CONNECTED));
-
-                    LogUtils.log("连接成功");
                     LoadingUtils.getInstance().dismiss();
+                    LogUtils.log("连接成功");
+
                     //进行接收线程
                     new ReadMsg().start();
                     break;
@@ -149,7 +162,7 @@ public class BluetoothSocketUtils {
 
             } catch (IOException e) {
                 e.printStackTrace();
-                LogUtils.log("连接已断开");
+                LogUtils.log("连接已断开:"+e.toString());
             } finally {
                 try {
                     in.close();
@@ -162,7 +175,7 @@ public class BluetoothSocketUtils {
 
 
     public void sendData(byte[] data) {
-        if(bluetoothSocket == null) { //防止未连接就发送信息
+        if(bluetoothSocket == null || !bluetoothSocket.isConnected()) { //防止未连接就发送信息
             return;
         }
         try {

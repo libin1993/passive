@@ -70,4 +70,15 @@ public class MsgType {
     public final static short RCV_SET_DBCELLNUM_ACK = 0xF1;//设备→终端 设置单兵8小区开关应答
     public final static short SEND_MANUAL_TARGET_CELL_SET = 0x42;// 终端→设备 手动锁定小区（预留）
     public final static short RCV_MANUAL_TARGET_CELL_SET_ACK = 0xF2; // 设备→终端 手动锁定小区应答（预留）
+
+
+
+    public final static String SEARCH_SUCCESS = "searchSuccess"; //搜索小区成功
+    public final static String RESEARCH_CELL = "researchCell"; //重新搜索小区
+    public final static String LOCATION_SUCCESS = "locationSuccess"; //定位成功
+    public final static String LOCATION_FAIL = "locationFail"; //定位失败
+    public final static String MONITOR_SUCCESS = "monitorSuccess"; //检测成功
+    public final static String MONITOR_FAIL = "monitorFail"; //检测失败
+    public final static String TRIGGER_SUCCESS = "triggerSuccess"; //诱发成功
+    public final static String TRIGGER_FAIL = "triggerFail"; //诱发失败
 }

@@ -16,7 +16,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp"
-            android:background="@color/locate_item"
+            android:background="@color/gray_2a2"
             android:orientation="horizontal">
 
             <TextView
@@ -37,7 +37,7 @@
                 android:singleLine="true"
                 android:maxLength="8"
                 android:paddingLeft="12dp"
-                android:background="@drawable/bound_dark_gray_5dp"
+                android:background="@drawable/bound_gray_40_5dp"
                 android:textColor="@android:color/white"
                 android:text="111"
                 android:textSize="14sp"/>
@@ -49,7 +49,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp"
-            android:background="@color/locate_item"
+            android:background="@color/gray_2a2"
             android:orientation="horizontal">
             <TextView
                 android:layout_width="100dp"
@@ -73,7 +73,7 @@
                 android:paddingLeft="12dp"
                 android:inputType="phone"
                 android:digits="@string/number_rule"
-                android:background="@drawable/bound_dark_gray_5dp"
+                android:background="@drawable/bound_gray_40_5dp"
                 android:textColor="@android:color/white"
                 android:text="13175135107"
                 android:textSize="14sp"/>
@@ -87,7 +87,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@color/locate_item"
+            android:background="@color/gray_2a2"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp"
@@ -111,7 +111,7 @@
                 android:maxLength="11"
                 android:paddingLeft="12dp"
                 android:digits="@string/number_rule"
-                android:background="@drawable/bound_dark_gray_5dp"
+                android:background="@drawable/bound_gray_40_5dp"
                 android:textColor="@android:color/white"
                 android:text="22283"
                 android:inputType="number"
@@ -121,7 +121,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@color/locate_item"
+            android:background="@color/gray_2a2"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp"
@@ -143,9 +143,9 @@
                 android:singleLine="true"
                 android:maxLength="11"
                 android:paddingLeft="12dp"
-                android:background="@drawable/bound_dark_gray_5dp"
+                android:background="@drawable/bound_gray_40_5dp"
                 android:textColor="@android:color/white"
-                android:text="203686176"
+                android:text="203907083"
                 android:digits="@string/number_rule"
                 android:inputType="number"
                 android:textSize="14sp"/>
@@ -155,7 +155,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@color/locate_item"
+            android:background="@color/gray_2a2"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp">
@@ -192,7 +192,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@color/locate_item"
+            android:background="@color/gray_2a2"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="15dp"

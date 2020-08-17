@@ -18,8 +18,10 @@ import com.synway.passive.location.fragment.LocationFragment;
 import com.synway.passive.location.fragment.ParameterFragment;
 import com.synway.passive.location.fragment.SetFragment;
 import com.synway.passive.location.socket.BluetoothSocketUtils;
+import com.synway.passive.location.socket.MsgType;
 import com.synway.passive.location.socket.SocketUtils;
 import com.synway.passive.location.utils.LoadingUtils;
+import com.synway.passive.location.utils.ToastUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -131,10 +133,11 @@ public class MainActivity extends BaseActivity {
     }
 
     /**
+     * 定位命令下发成功
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void scanResult(String searchResult) {
-        if ("locationSuccess".equals(searchResult)){
+        if (MsgType.LOCATION_SUCCESS.equals(searchResult)){
             vpMain.setCurrentItem(1);
         }
     }

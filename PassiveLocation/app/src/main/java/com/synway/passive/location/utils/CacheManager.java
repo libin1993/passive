@@ -19,6 +19,34 @@ public class CacheManager {
     public static String phoneNumber;
     public static String lac;
     public static String cid;
+    public static int vendor = 1;
 
     public static  boolean isLocation = false;
+
+    public static String[] styleArr ={"制式一","制式二","制式三"};
+    public static Integer[] timesArr ={1,2,5,10,20,30};
+    public static Integer[] timeoutArr ={30,40,50,60,90};
+    public static Integer[] intervalArr ={3,5,10,15,20,25};
+    public static Integer[] detectArr ={30,60,90,120};
+
+
+    public static boolean isSearched(){
+        for (Map.Entry<String, CellBean> entry : CacheManager.cellMap.entrySet()) {
+            if (entry.getKey().equals(lac+","+cid)){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static CellBean getCell(){
+        for (Map.Entry<String, CellBean> entry : CacheManager.cellMap.entrySet()) {
+            if (entry.getKey().equals(lac+","+cid)){
+                return entry.getValue();
+            }
+        }
+
+        return null;
+    }
 }

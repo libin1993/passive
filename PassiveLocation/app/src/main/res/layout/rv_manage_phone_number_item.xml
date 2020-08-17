@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/locate_item_bg">
+    android:background="@color/gray_40">
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"

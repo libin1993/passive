@@ -7,7 +7,9 @@ import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import android.widget.TextView;
 
 import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseFragment;
+import com.synway.passive.location.bean.CellBean;
 import com.synway.passive.location.socket.BluetoothSocketUtils;
 import com.synway.passive.location.socket.LteSendManager;
 import com.synway.passive.location.socket.MsgType;
@@ -91,8 +94,8 @@ public class PhoneInfoFragment extends BaseFragment {
         fcnList.add("手动");
 
 
-        initTabLayout(tabLayoutStandard,standardList);
-        initTabLayout(tabLayoutFcn,fcnList);
+        initTabLayout(1, tabLayoutStandard, standardList);
+        initTabLayout(2, tabLayoutFcn, fcnList);
         clToManagePhoneNumberList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,9 +103,27 @@ public class PhoneInfoFragment extends BaseFragment {
                 getParentFragment().getActivity().startActivity(intent);
             }
         });
+
+        etPhoneNumber.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                CacheManager.phoneNumber = s.toString().trim();
+            }
+        });
+
     }
 
-    private void initTabLayout(TabLayout tabLayout,List<String> titleList){
+    private void initTabLayout(final int type, TabLayout tabLayout, List<String> titleList) {
         for (String title : titleList) {
             tabLayout.addTab(tabLayout.newTab().setText(title));
         }
@@ -120,7 +141,7 @@ public class PhoneInfoFragment extends BaseFragment {
         }
 
         tab = tabLayout.getTabAt(0);
-        if (tab != null  && tab.getCustomView() instanceof TextView) {
+        if (tab != null && tab.getCustomView() instanceof TextView) {
             ((TextView) tab.getCustomView()).setTextSize(19);
         }
 
@@ -132,6 +153,11 @@ public class PhoneInfoFragment extends BaseFragment {
                 if (view instanceof TextView) {
                     ((TextView) view).setTextSize(19);
                 }
+
+                if (type == 1) {
+                    CacheManager.vendor = tab.getPosition() + 1;
+                }
+
             }
 
             @Override
@@ -159,25 +185,23 @@ public class PhoneInfoFragment extends BaseFragment {
     }
 
 
-
     @OnClick(R.id.btn_location)
     public void onViewClicked() {
-        if (BluetoothSocketUtils.getInstance().isConnected()){
+        if (!BluetoothSocketUtils.getInstance().isConnected()) {
             ToastUtils.getInstance().showToast("请先连接蓝牙");
             return;
         }
-        LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(),"定位中");
-        CacheManager.cellMap.clear();
+
         searchSuccess = false;
         final String phoneNumber = etPhoneNumber.getText().toString().trim();
-        if (TextUtils.isEmpty(phoneNumber) || phoneNumber.length() !=11){
+        if (TextUtils.isEmpty(phoneNumber) || phoneNumber.length() != 11) {
             ToastUtils.getInstance().showToast("请输入11位手机号");
             return;
         }
         CacheManager.phoneNumber = phoneNumber;
 
         String lac = etPhoneLac.getText().toString().trim();
-        if (TextUtils.isEmpty(lac)){
+        if (TextUtils.isEmpty(lac)) {
             ToastUtils.getInstance().showToast("请输入LAC");
             return;
         }
@@ -185,24 +209,54 @@ public class PhoneInfoFragment extends BaseFragment {
 
 
         String cid = etPhoneCid.getText().toString().trim();
-        if (TextUtils.isEmpty(cid)){
+        if (TextUtils.isEmpty(cid)) {
             ToastUtils.getInstance().showToast("请输入CID");
             return;
         }
+        CacheManager.cid = cid;
+
         CacheManager.isLocation = false;
-        CacheManager.cid =cid;
-        int vendor = tabLayoutStandard.getSelectedTabPosition()+1;
+
+        int vendor = tabLayoutStandard.getSelectedTabPosition() + 1;
+        CacheManager.vendor = vendor;
 
         int searchMode = 0;
         int[] fcnArray = FormatUtils.getInstance().getDefaultFcn(vendor);
 
-        LteSendManager.searchCell(vendor,phoneNumber,searchMode,fcnArray,"","");
+        LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(), "定位中");
 
-        new CountDownTimer(10000, 1000) {
+        CacheManager.cellMap.clear();
+//        if (CacheManager.isSearched()) {
+//            LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
+//            new CountDownTimer(10000, 1000) {
+//                @Override
+//                public void onTick(long millisUntilFinished) {
+//                    if (CacheManager.isLocation) {
+//                        cancel();
+//                    }
+//                }
+//
+//                @Override
+//                public void onFinish() {
+//                    LoadingUtils.getInstance().dismiss();
+//                    ToastUtils.getInstance().showToast("定位失败");
+//                }
+//            }.start();
+//            return;
+//        }
+
+
+        LteSendManager.searchCell(vendor, phoneNumber, searchMode, fcnArray, "", "");
+
+        new CountDownTimer(15000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                if (searchSuccess){
+                if (searchSuccess) {
                     cancel();
+                    CellBean cellBean = CacheManager.getCell();
+                    if (cellBean !=null){
+                        LteSendManager.lockCell(cellBean.getCid(),cellBean.getFreq());
+                    }
                     LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
                 }
             }
@@ -210,31 +264,34 @@ public class PhoneInfoFragment extends BaseFragment {
             @Override
             public void onFinish() {
                 LoadingUtils.getInstance().dismiss();
-                if (!searchSuccess){
-                    if (CacheManager.cellMap.size() <= 0){
+                if (!searchSuccess) {
+                    cancel();
+                    if (CacheManager.cellMap.size() <= 0) {
                         ToastUtils.getInstance().showToast("未搜索到小区");
                         return;
                     }
                     DetectFailedDialog detectFailedDialog = new DetectFailedDialog();
                     detectFailedDialog.setCancelable(false);
-                    detectFailedDialog.show(getChildFragmentManager(),"");
+                    detectFailedDialog.show(getChildFragmentManager(), "");
                 }
             }
         }.start();
 
 
-
     }
 
     /**
+     *
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void scanResult(String searchResult) {
-       if ("searchSuccess".equals(searchResult)){
-           searchSuccess = true;
-       }else if ("research".equals(searchResult)){
-           onViewClicked();
-       }
+    public void scanResult(String result) {
+        if (MsgType.SEARCH_SUCCESS.equals(result)) {
+            searchSuccess = true;
+        } else if (MsgType.RESEARCH_CELL.equals(result)) {
+            onViewClicked();
+        }else if (MsgType.LOCATION_FAIL.equals(result)){
+            ToastUtils.getInstance().showToast("定位失败");
+        }
     }
 
 

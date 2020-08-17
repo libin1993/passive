@@ -33,7 +33,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:background="@color/locate_item"
+        android:background="@color/gray_2a2"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle"
         android:id="@+id/clTitle">
         <TextView
@@ -98,7 +98,7 @@
         android:layout_height="350dp"
         app:layout_constraintLeft_toLeftOf="@id/clTitle"
         app:layout_constraintRight_toRightOf="@id/clTitle"
-        android:background="@color/locate_item_bg"
+        android:background="@color/gray_40"
         app:layout_constraintTop_toBottomOf="@id/clTitle"
         android:id="@+id/rvPhoneNumberList"/>
     <Button

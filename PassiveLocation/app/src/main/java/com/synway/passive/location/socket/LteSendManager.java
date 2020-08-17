@@ -165,6 +165,46 @@ public class LteSendManager {
 
     }
 
+    /**
+     * 监测
+     */
+    public static void sendMonitor(String phoneNumber) {
+        byte[] protocolBytes = new byte[]{(byte) 7};
+        byte[] monitorModeBytes = new byte[]{(byte) 1};
+        byte[] targetNumberBytes = new byte[11];
+        for (int i = 0; i < 11; i++) {
+            int targetNumber = Integer.parseInt(phoneNumber.substring(i, i + 1));
+            targetNumberBytes[i] = (byte) targetNumber;
+        }
+        byte[] esnBytes = FormatUtils.getInstance().hexStringToBytes("FFFFFFFF");
+
+
+        Long imsi;
+        if (CacheManager.vendor == 1) {
+            imsi = 460000000000000L;
+        } else if (CacheManager.vendor == 2) {
+            imsi = 460010000000000L;
+        } else {
+            imsi = 460030000000000L;
+        }
+
+        byte[] imsiBytes = FormatUtils.getInstance().longToBytes(imsi);
+        FormatUtils.getInstance().reverseData(imsiBytes);
+
+
+        ByteArrayBuffer byteArray = new ByteArrayBuffer(15);
+        byteArray.append(protocolBytes, 0, protocolBytes.length);
+        byteArray.append(monitorModeBytes, 0, monitorModeBytes.length);
+        byteArray.append(targetNumberBytes, 0, targetNumberBytes.length);
+        byteArray.append(esnBytes, 0, esnBytes.length);
+        byteArray.append(imsiBytes, 0, imsiBytes.length);
+
+        byte[] bytes = byteArray.toByteArray();
+
+        sendData(MsgType.SEND_MONITOR_CMD, bytes);
+
+    }
+
 
     /**
      * 设置增益
@@ -174,6 +214,39 @@ public class LteSendManager {
     public static void setPower(byte power) {
         sendData(MsgType.SEND_SET_POWERLEV, new byte[]{power});
     }
+
+    /**
+     * 锁定小区
+     *
+     * @param cid 小区cid
+     * @param fcn
+     */
+    public static void lockCell(int cid,int fcn) {
+        byte[] cidsBytes = new byte[12];
+        byte[] tempCidBytes = FormatUtils.getInstance().intToByteArray(cid);
+        cidsBytes[0] = tempCidBytes[3];
+        cidsBytes[1] = tempCidBytes[2];
+        cidsBytes[2] = tempCidBytes[1];
+        cidsBytes[3] = tempCidBytes[0];
+
+        byte[] fcnsBytes = new byte[6];
+        Arrays.fill(fcnsBytes, (byte) 0x00);
+        byte[] temFcnBytes = FormatUtils.getInstance().hexStringToBytes(FormatUtils.getInstance().intToHexString(fcn));
+        fcnsBytes[0] = temFcnBytes[1];
+        fcnsBytes[1] = temFcnBytes[0];
+
+
+        ByteArrayBuffer byteArray = new ByteArrayBuffer(18);
+        byteArray.append(cidsBytes, 0, cidsBytes.length);
+        byteArray.append(fcnsBytes, 0, fcnsBytes.length);
+
+        byte[] bytes = byteArray.toByteArray();
+
+        LogUtils.log("锁定小区：cid="+cid+",频点="+fcn);
+        sendData(MsgType.SEND_TARGET_CELL_SET, bytes);
+    }
+
+
 
 
     public static void sendData(short msgType) {

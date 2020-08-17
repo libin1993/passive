@@ -5,13 +5,18 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis;
@@ -25,9 +30,14 @@ import com.github.mikephil.charting.utils.ViewPortHandler;
 import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseFragment;
 import com.synway.passive.location.bean.LocationInfoBean;
+import com.synway.passive.location.socket.BluetoothSocketUtils;
+import com.synway.passive.location.socket.LteSendManager;
+import com.synway.passive.location.socket.MsgType;
 import com.synway.passive.location.utils.CacheManager;
-import com.synway.passive.location.utils.LoadingUtils;
+import com.synway.passive.location.utils.LogUtils;
+import com.synway.passive.location.utils.SPUtils;
 import com.synway.passive.location.utils.ToastUtils;
+import com.synway.passive.location.widget.RVDividerItemDecoration;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -60,12 +70,19 @@ public class LocationFragment extends BaseFragment {
     TextView tvEnergyInfo;
     @BindView(R.id.tvPhoneNumber)
     TextView tvPhoneNumber;
+    @BindView(R.id.rv_trigger_status)
+    RecyclerView rvTriggerStatus;
     private Unbinder unbinder;
     private LineDataSet lineDataSet;
     private LineData lineData;
 
     private List<Integer> valueList = new ArrayList<>();
     private boolean startTrigger = false;
+
+    private Timer timer;
+    private List<Boolean> triggerList = new ArrayList<>();
+    private BaseQuickAdapter<Boolean, BaseViewHolder> adapter;
+    private int triggerTimes = 0; //诱发次数
 
     @Nullable
     @Override
@@ -78,13 +95,9 @@ public class LocationFragment extends BaseFragment {
     }
 
     private void initView() {
-        rgLocateMode.check(R.id.rbLowInputGain);
-        rgLocateMode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
 
-            }
-        });
+        rgLocateMode.setOnCheckedChangeListener(onCheckedChangeListener);
+
         lineChart.setNoDataText("");
         lineChart.setDrawGridBackground(false);
         lineChart.setHighlightPerTapEnabled(false);//隐藏图表内的点击十字线
@@ -143,6 +156,24 @@ public class LocationFragment extends BaseFragment {
         lineData = new LineData();
         lineChart.setData(lineData);
         lineChart.invalidate();
+
+        rvTriggerStatus.setLayoutManager(new LinearLayoutManager(getActivity(),LinearLayoutManager.HORIZONTAL,false));
+        rvTriggerStatus.addItemDecoration(new RVDividerItemDecoration(getActivity(),true,R.drawable.rv_divider_black_vertical));
+        adapter = new BaseQuickAdapter<Boolean, BaseViewHolder>(R.layout.layout_trigger_item,triggerList) {
+            @Override
+            protected void convert(BaseViewHolder helper, Boolean item) {
+                TextView tvStatus = helper.getView(R.id.tv_trigger_status);
+                tvStatus.setText(String.valueOf(helper.getAdapterPosition()+1));
+                if (item){
+                    tvStatus.setBackgroundResource(R.color.blue_288);
+                }else {
+                    tvStatus.setBackgroundResource(R.color.red_e38);
+                }
+
+            }
+        };
+        rvTriggerStatus.setAdapter(adapter);
+
     }
 
 
@@ -186,6 +217,9 @@ public class LocationFragment extends BaseFragment {
         tvPhoneNumber.setText(CacheManager.phoneNumber);
         startTrigger = false;
         bntStartInduction.setText("开始诱发");
+
+        ((RadioButton) rgLocateMode.getChildAt(2)).setChecked(true);
+
     }
 
 
@@ -196,23 +230,91 @@ public class LocationFragment extends BaseFragment {
             return;
         }
 
-        if (startTrigger) {
-            LoadingUtils.getInstance().showLoading(getActivity(), "正在诱发中");
+        if (!startTrigger) {
+            triggerTimes = 0;
+            triggerList.clear();
+            adapter.notifyDataSetChanged();
             bntStartInduction.setText("停止诱发");
             startTrigger = true;
-            new Timer().schedule(new TimerTask() {
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
+                    LogUtils.log("诱发次数:"+triggerTimes+":"+CacheManager.timesArr[SPUtils.getInstance().getTriggerTimes()]);
+                   if (triggerTimes < CacheManager.timesArr[SPUtils.getInstance().getTriggerTimes()]){
+                       LteSendManager.startTrigger();
+                       triggerTimes++;
+                   }else {
+                       cancel();
+                       getActivity().runOnUiThread(new Runnable() {
+                           @Override
+                           public void run() {
+                               bntStartInduction.setText("开始诱发");
+                               startTrigger = false;
+                           }
+                       });
+
+                   }
 
                 }
-            }, 0, 5000);
+            }, 0, CacheManager.intervalArr[SPUtils.getInstance().getTriggerInterval()]* 1000);
         } else {
-            LoadingUtils.getInstance().showLoading(getActivity(), "停止诱发中");
             bntStartInduction.setText("开始诱发");
             startTrigger = false;
+            if (timer !=null){
+                timer.cancel();
+                timer = null;
+            }
+//            LteSendManager.stopTrigger();
         }
 
+    }
 
+    private RadioGroup.OnCheckedChangeListener onCheckedChangeListener = new RadioGroup.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(RadioGroup group, int checkedId) {
+            if (!BluetoothSocketUtils.getInstance().isConnected()) {
+                ToastUtils.getInstance().showToast("请先连接蓝牙");
+                return;
+            }
+
+            byte power = 0;
+            switch (checkedId) {
+                case R.id.rbHighInputGain:
+                    power = 0;
+                    break;
+                case R.id.rbMediumInputGain:
+                    power = 1;
+                    break;
+                case R.id.rbLowInputGain:
+                    power = 2;
+                    break;
+                case R.id.rbSmart:
+                    power = 3;
+                    break;
+            }
+
+            LteSendManager.setPower(power);
+        }
+    };
+
+
+    /**
+     * 定位命令下发成功
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void scanResult(String result) {
+        if (MsgType.LOCATION_SUCCESS.equals(result)) {
+            startLocation();
+        } else if (MsgType.TRIGGER_SUCCESS.equals(result)) {
+            triggerList.add(true);
+            adapter.notifyDataSetChanged();
+            rvTriggerStatus.scrollToPosition(triggerList.size()-1);
+        }else if (MsgType.TRIGGER_FAIL.equals(result)){
+            triggerList.add(false);
+            adapter.notifyDataSetChanged();
+            rvTriggerStatus.scrollToPosition(triggerList.size()-1);
+        }
     }
 
     /**
@@ -242,6 +344,7 @@ public class LocationFragment extends BaseFragment {
         super.onDestroyView();
         unbinder.unbind();
         EventBus.getDefault().unregister(this);
+
     }
 
 }
