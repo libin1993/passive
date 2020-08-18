@@ -124,7 +124,7 @@ public class InductionSettingActivity extends BaseActivity {
     }
 
     private void initAdapter(Spinner spinner, Object[] values) {
-        ArrayAdapter<String> adapter =new ArrayAdapter<>(this,R.layout.spinner_dropdown_item);
+        ArrayAdapter<String> adapter =new ArrayAdapter<>(this,R.layout.spinner_select_item);
 
         for (int i = 0; i < values.length; i++) {
             adapter.add(String.valueOf(values[i]));

@@ -5,24 +5,23 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/black"
-        android:paddingBottom="80dp">
+        android:paddingBottom="30dp">
 
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="@string/settings"
+            android:layout_height="64dp"
+            android:text="设  置"
             android:textColor="@color/white"
-            android:textSize="20sp"
+            android:textSize="24sp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:paddingTop="20dp"/>
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/clUser"
@@ -31,7 +30,6 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/bound_gray_10dp"
-            android:layout_marginTop="10dp"
             android:paddingBottom="5dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -101,42 +99,11 @@
         </android.support.constraint.ConstraintLayout>
 
         <TextView
-            android:id="@+id/tvBluetooth"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginRight="10dp"
-            android:background="@drawable/bound_gray_5dp"
-            android:drawableRight="@drawable/ic_arrow_right"
-            android:gravity="center_vertical"
-            android:paddingLeft="60dp"
-            android:text="@string/bluetooth"
-            android:textColor="@color/white"
-            android:textSize="15dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/clUser" />
-
-        <ImageView
-            android:id="@+id/ivBluetooth"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginBottom="5dp"
-            android:src="@mipmap/ic_bluetooth"
-            app:layout_constraintBottom_toBottomOf="@+id/tvBluetooth"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintLeft_toLeftOf="@id/tvBluetooth"
-            app:layout_constraintTop_toTopOf="@id/tvBluetooth" />
-
-        <TextView
             android:id="@+id/tvInductionSetting"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="12dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/round_top_gray_5dp"
             android:drawableRight="@drawable/ic_arrow_right"
@@ -147,7 +114,7 @@
             android:textSize="15dp"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvBluetooth" />
+            app:layout_constraintTop_toBottomOf="@+id/clUser" />
 
         <ImageView
             android:id="@+id/ivInducementSetting"
@@ -249,7 +216,7 @@
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginLeft="10dp"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="12dp"
             android:layout_marginRight="10dp"
             android:background="@drawable/round_top_gray_5dp"
             android:drawableRight="@drawable/ic_arrow_right"

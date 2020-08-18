@@ -9,21 +9,19 @@
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/locate_title"
+        android:layout_height="64dp"
+        android:text="定  位"
         android:textColor="@color/white"
-        android:textSize="20sp"
+        android:textSize="24sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:paddingTop="20dp"/>
 
     <View
         android:id="@+id/v_title_slice"
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:layout_marginTop="10dp"
-        android:background="@color/gray"
+        android:background="@color/gray_40"
         app:layout_constraintTop_toBottomOf="@+id/tvTitle" />
 
     <TextView
@@ -127,7 +125,8 @@
             android:button="@null"
             android:gravity="center"
             android:text="@string/high_input_gain"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:checked="true"/>
 
         <RadioButton
             android:layout_width="0dp"
@@ -175,7 +174,7 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_trigger_status"
         android:layout_width="wrap_content"
-        android:layout_height="30dp"
+        android:layout_height="20dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toBottomOf="@id/chart"
         android:layout_marginLeft="12dp"
@@ -199,7 +198,7 @@
         android:id="@+id/tvInductionHitCount"
         app:layout_constraintRight_toRightOf="parent"
         android:textSize="14sp"
-        android:text="命中0次"
+        android:text="命中 次"
         android:textColor="@color/white"
         app:layout_constraintTop_toTopOf="@+id/tvEnergyTrend"
         app:layout_constraintBottom_toBottomOf="@+id/tvEnergyTrend"

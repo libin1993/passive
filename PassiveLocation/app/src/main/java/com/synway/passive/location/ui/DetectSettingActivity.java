@@ -3,6 +3,7 @@ package com.synway.passive.location.ui;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -14,12 +15,14 @@ import android.widget.TextView;
 
 import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseActivity;
+import com.synway.passive.location.socket.BluetoothSocketUtils;
 import com.synway.passive.location.socket.LteSendManager;
 import com.synway.passive.location.socket.MsgType;
 import com.synway.passive.location.utils.CacheManager;
 import com.synway.passive.location.utils.LoadingUtils;
 import com.synway.passive.location.utils.SPUtils;
 import com.synway.passive.location.utils.StatusBarUtils;
+import com.synway.passive.location.utils.ToastUtils;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -47,6 +50,8 @@ public class DetectSettingActivity extends BaseActivity {
     TextView tvDetectResult;
     @BindView(R.id.btn_start_test)
     Button btnStartTest;
+    @BindView(R.id.et_target_number)
+    EditText etTargetNumber;
     private Unbinder unbinder;
     private CountDownTimer countDownTimer;
 
@@ -63,7 +68,11 @@ public class DetectSettingActivity extends BaseActivity {
         StatusBarUtils.getInstance().setStatusBarHeight(viewStatusBar);
         tvTitleName.setText("检测设置");
 
-        ArrayAdapter<String> adapter =new ArrayAdapter<>(this,R.layout.spinner_dropdown_item);
+        if (!TextUtils.isEmpty(CacheManager.phoneNumber)){
+            etTargetNumber.setText(CacheManager.phoneNumber);
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_select_item);
 
         adapter.addAll();
         for (int i = 0; i < CacheManager.detectArr.length; i++) {
@@ -72,7 +81,7 @@ public class DetectSettingActivity extends BaseActivity {
         adapter.setDropDownViewResource(R.layout.spinner_dropdown_item);
         spinner.setAdapter(adapter);
 
-        int defaultInterval= SPUtils.getInstance().getDetectInterval();
+        int defaultInterval = SPUtils.getInstance().getDetectInterval();
 
         spinner.setSelection(defaultInterval);
 
@@ -80,7 +89,7 @@ public class DetectSettingActivity extends BaseActivity {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-                SPUtils.getInstance().put(SPUtils.DETECT_INTERVAL,position);
+                SPUtils.getInstance().put(SPUtils.DETECT_INTERVAL, position);
             }
 
             @Override
@@ -93,7 +102,18 @@ public class DetectSettingActivity extends BaseActivity {
 
 
     private void startDetect() {
-        LteSendManager.sendMonitor(CacheManager.phoneNumber);
+        if (!BluetoothSocketUtils.getInstance().isConnected()) {
+            ToastUtils.getInstance().showToast("请先连接蓝牙");
+            return;
+        }
+
+        String phoneNumber = etTargetNumber.getText().toString().trim();
+        if (TextUtils.isEmpty(phoneNumber)){
+            ToastUtils.getInstance().showToast("请输入目标手机号码");
+            return;
+        }
+
+        LteSendManager.sendMonitor(phoneNumber);
         LoadingUtils.getInstance().showLoading(this, "检测中");
         countDownTimer = new CountDownTimer(CacheManager.detectArr[SPUtils.getInstance().getDetectInterval()], 1000) {
             @Override

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PassiveLocation</string>
+    <string name="app_name">被动定位</string>
     <string name="account_rule">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
     <string name="number_rule">0123456789</string>
 <!--    定位 页面-->

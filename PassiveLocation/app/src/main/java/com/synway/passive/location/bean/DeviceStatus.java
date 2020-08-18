@@ -11,8 +11,6 @@ public class DeviceStatus {
     public static final int BLUETOOTH_CONNECTED = 4;
     public static final int BLUETOOTH_SOCKET_DISCONNECTED = 5;
     public static final int BLUETOOTH_SOCKET_CONNECTED = 6;
-    public static final int SOCKET_DISCONNECTED = 7;
-    public static final int SOCKET_CONNECTED = 8;
 
     public static int deviceStatus = BLUETOOTH_CLOSED;
 

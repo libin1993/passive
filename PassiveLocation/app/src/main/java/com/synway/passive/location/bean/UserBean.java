@@ -16,7 +16,7 @@ public class UserBean {
     private Long id;
 
     @Property(nameInDb = "account")
-    private int account;
+    private String account;
 
     @Property(nameInDb = "password")
     private String password;
@@ -24,8 +24,8 @@ public class UserBean {
     @Property(nameInDb = "remark")
     private int remark;
 
-    @Generated(hash = 1128301399)
-    public UserBean(Long id, int account, String password, int remark) {
+    @Generated(hash = 1556085517)
+    public UserBean(Long id, String account, String password, int remark) {
         this.id = id;
         this.account = account;
         this.password = password;
@@ -44,11 +44,11 @@ public class UserBean {
         this.id = id;
     }
 
-    public int getAccount() {
+    public String getAccount() {
         return this.account;
     }
 
-    public void setAccount(int account) {
+    public void setAccount(String account) {
         this.account = account;
     }
 
@@ -67,5 +67,6 @@ public class UserBean {
     public void setRemark(int remark) {
         this.remark = remark;
     }
+
 
 }

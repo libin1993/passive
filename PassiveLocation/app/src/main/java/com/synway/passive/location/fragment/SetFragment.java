@@ -14,7 +14,7 @@ import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseFragment;
 import com.synway.passive.location.ui.DetectSettingActivity;
 import com.synway.passive.location.ui.InductionSettingActivity;
-import com.synway.passive.location.ui.PhoneNumberManageActivity;
+import com.synway.passive.location.ui.NameListActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -66,7 +66,7 @@ public class SetFragment extends BaseFragment {
         tvManagePhoneNumberList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PhoneNumberManageActivity.class);
+                Intent intent = new Intent(getActivity(), NameListActivity.class);
                 getActivity().startActivity(intent);
             }
         });

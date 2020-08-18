@@ -2,11 +2,13 @@ package com.synway.passive.location.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.SmsManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.orhanobut.logger.Logger;
 import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseFragment;
 import com.synway.passive.location.bean.LocationInfoBean;
@@ -34,7 +37,9 @@ import com.synway.passive.location.socket.BluetoothSocketUtils;
 import com.synway.passive.location.socket.LteSendManager;
 import com.synway.passive.location.socket.MsgType;
 import com.synway.passive.location.utils.CacheManager;
+import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LogUtils;
+import com.synway.passive.location.utils.OSUtils;
 import com.synway.passive.location.utils.SPUtils;
 import com.synway.passive.location.utils.ToastUtils;
 import com.synway.passive.location.widget.RVDividerItemDecoration;
@@ -83,6 +88,7 @@ public class LocationFragment extends BaseFragment {
     private List<Boolean> triggerList = new ArrayList<>();
     private BaseQuickAdapter<Boolean, BaseViewHolder> adapter;
     private int triggerTimes = 0; //诱发次数
+    private int replyTimes = 0 ; //诱发开始、结束诱发回复次数
 
     @Nullable
     @Override
@@ -232,6 +238,7 @@ public class LocationFragment extends BaseFragment {
 
         if (!startTrigger) {
             triggerTimes = 0;
+            replyTimes = 0;
             triggerList.clear();
             adapter.notifyDataSetChanged();
             bntStartInduction.setText("停止诱发");
@@ -251,6 +258,8 @@ public class LocationFragment extends BaseFragment {
                            public void run() {
                                bntStartInduction.setText("开始诱发");
                                startTrigger = false;
+                               replyTimes = 0;
+                               triggerTimes = 0;
                            }
                        });
 
@@ -265,7 +274,6 @@ public class LocationFragment extends BaseFragment {
                 timer.cancel();
                 timer = null;
             }
-//            LteSendManager.stopTrigger();
         }
 
     }
@@ -303,25 +311,55 @@ public class LocationFragment extends BaseFragment {
      * 定位命令下发成功
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void scanResult(String result) {
+    public void locationSuccess(String result) {
         if (MsgType.LOCATION_SUCCESS.equals(result)) {
+
             startLocation();
         } else if (MsgType.TRIGGER_SUCCESS.equals(result)) {
-            triggerList.add(true);
-            adapter.notifyDataSetChanged();
-            rvTriggerStatus.scrollToPosition(triggerList.size()-1);
+            Logger.d("回复次数"+replyTimes);
+            if (replyTimes >= CacheManager.timesArr[SPUtils.getInstance().getTriggerTimes()] *2){
+                return;
+            }
+
+            replyTimes++;
+            if (replyTimes % 2 == 0){
+                triggerList.add(true);
+                adapter.notifyDataSetChanged();
+                rvTriggerStatus.scrollToPosition(triggerList.size()-1);
+            }else {
+
+//                Logger.d("发送短信："+CacheManager.phoneNumber+","+FormatUtils.getInstance().getSafeSms());
+                OSUtils.getInstance().sendMsg(getActivity(),CacheManager.phoneNumber, FormatUtils.getInstance().getSafeSms());
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        LteSendManager.stopTrigger();
+//                    }
+//                },6000);
+
+            }
+
         }else if (MsgType.TRIGGER_FAIL.equals(result)){
-            triggerList.add(false);
-            adapter.notifyDataSetChanged();
-            rvTriggerStatus.scrollToPosition(triggerList.size()-1);
+            if (replyTimes >= CacheManager.timesArr[SPUtils.getInstance().getTriggerTimes()] *2){
+                return;
+            }
+            replyTimes++;
+            if (replyTimes % 2 == 0){
+                triggerList.add(false);
+                adapter.notifyDataSetChanged();
+                rvTriggerStatus.scrollToPosition(triggerList.size()-1);
+            }else {
+                OSUtils.getInstance().sendMsg(getActivity(),CacheManager.phoneNumber, FormatUtils.getInstance().getSafeSms());
+//                LteSendManager.stopTrigger();
+            }
         }
     }
 
     /**
-     *
+     *定位上报
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void scanResult(LocationInfoBean locationInfoBean) {
+    public void locationReport(LocationInfoBean locationInfoBean) {
         for (Short dbm : locationInfoBean.getDbm()) {
             valueList.add(Integer.valueOf(dbm));
             addEntry(dbm);

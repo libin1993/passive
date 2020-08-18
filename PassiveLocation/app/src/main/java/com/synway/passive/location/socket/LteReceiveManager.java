@@ -1,6 +1,7 @@
 package com.synway.passive.location.socket;
 
 
+import com.orhanobut.logger.Logger;
 import com.synway.passive.location.bean.CellBean;
 import com.synway.passive.location.bean.DeviceStatus;
 import com.synway.passive.location.bean.DeviceStatusBean;
@@ -135,8 +136,7 @@ public class LteReceiveManager {
         System.arraycopy(tempPackage, 66, tempReserve, 0, 16);
         ltePackage.setReserve(tempReserve);
 
-        LogUtils.log("接收数据类型：" + Integer.toHexString(ltePackage.getType()));
-        LogUtils.log("接收数据："+FormatUtils.getInstance().bytesToHexString(tempPackage));
+        Logger.d("接收数据："+Integer.toHexString(ltePackage.getType())+":"+FormatUtils.getInstance().bytesToHexString(tempPackage));
 
         //包内容
         if (dataLength > 0) {
@@ -204,7 +204,9 @@ public class LteReceiveManager {
             case MsgType.RCV_LOCATION_CMD:
                 LoadingUtils.getInstance().dismiss();
                 if (status == 0){
-                    EventBus.getDefault().post(MsgType.LOCATION_SUCCESS);
+                    if (!CacheManager.isLocation){
+                        EventBus.getDefault().post(MsgType.LOCATION_SUCCESS);
+                    }
                     CacheManager.isLocation = true;
                 }else {
                     EventBus.getDefault().post(MsgType.LOCATION_FAIL);
@@ -241,7 +243,6 @@ public class LteReceiveManager {
         System.arraycopy(data, 0, tempCellNum, 0, 4);
         FormatUtils.getInstance().reverseData(tempCellNum);
         int cellNum = FormatUtils.getInstance().byteToInt(tempCellNum);
-        LogUtils.log("小区数量："+cellNum);
 
         byte[] cellBytes = new byte[ltePackage.getDataLength() - 4];
         System.arraycopy(data, 4, cellBytes, 0, ltePackage.getDataLength() - 4);
@@ -264,16 +265,13 @@ public class LteReceiveManager {
             cellBean.setCellErrorRate(cellBytes[i+880]);
             cellBean.setHit(cellBytes[i+1120]);
 
-            LogUtils.log(cellBean.toString());
+            Logger.d("小区上报："+cellNum+":"+cellBean.toString());
 
             CacheManager.cellMap.put(cellBean.getLac()+","+cellBean.getCid(),cellBean);
 
-            LogUtils.log("目标："+CacheManager.lac+","+CacheManager.cid+";搜索到的小区："+cellBean.getLac()+","+cellBean.getCid());
             if (String.valueOf(cellBean.getLac()).equals(CacheManager.lac) &&  String.valueOf(cellBean.getCid()).equals(CacheManager.cid)){
                 EventBus.getDefault().post(MsgType.SEARCH_SUCCESS);
             }
-
-
 
         }
 
@@ -337,7 +335,9 @@ public class LteReceiveManager {
         System.arraycopy(ltePackage.getData(), 4, msgBytes, 0, ltePackage.getDataLength() - 4);
         String msg = new String(msgBytes, StandardCharsets.UTF_8);
         deviceStatus.setMsg(msg);
-        LogUtils.log("设备状态："+deviceStatus.toString());
+        Logger.d("设备状态："+deviceStatus.toString());
+
+        EventBus.getDefault().post(deviceStatus);
     }
 
 

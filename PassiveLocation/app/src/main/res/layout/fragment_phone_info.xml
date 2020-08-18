@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rl_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -35,12 +36,13 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginRight="3dp"
                 android:singleLine="true"
-                android:maxLength="8"
+                android:maxLength="5"
                 android:paddingLeft="12dp"
                 android:background="@drawable/bound_gray_40_5dp"
                 android:textColor="@android:color/white"
-                android:text="111"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:hint="请输入目标姓名"
+                android:textColorHint="@color/gray_ee"/>
 
         </LinearLayout>
         <RelativeLayout
@@ -64,19 +66,21 @@
                 android:id="@+id/et_phone_number"
                 android:layout_width="match_parent"
                 android:layout_height="34dp"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="3dp"
+                android:layout_marginTop="3dp"
                 android:layout_marginLeft="100dp"
+                android:layout_marginRight="3dp"
+                android:background="@drawable/bound_gray_40_5dp"
+                android:digits="@string/number_rule"
                 android:drawableRight="@drawable/ic_arrow_right"
-                android:singleLine="true"
+                android:inputType="phone"
                 android:maxLength="11"
                 android:paddingLeft="12dp"
-                android:inputType="phone"
-                android:digits="@string/number_rule"
-                android:background="@drawable/bound_gray_40_5dp"
+                android:singleLine="true"
                 android:textColor="@android:color/white"
-                android:text="13175135107"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:hint="请输入目标手机号码"
+                android:textColorHint="@color/gray_ee"/>
+
             <RelativeLayout
                 android:layout_width="50dp"
                 android:layout_height="match_parent"
@@ -113,9 +117,10 @@
                 android:digits="@string/number_rule"
                 android:background="@drawable/bound_gray_40_5dp"
                 android:textColor="@android:color/white"
-                android:text="22283"
                 android:inputType="number"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:hint="请输入目标LAC"
+                android:textColorHint="@color/gray_ee"/>
 
         </LinearLayout>
         <LinearLayout
@@ -145,10 +150,11 @@
                 android:paddingLeft="12dp"
                 android:background="@drawable/bound_gray_40_5dp"
                 android:textColor="@android:color/white"
-                android:text="203907083"
                 android:digits="@string/number_rule"
                 android:inputType="number"
-                android:textSize="14sp"/>
+                android:textSize="14sp"
+                android:hint="请输入目标CID"
+                android:textColorHint="@color/gray_ee"/>
 
 
         </LinearLayout>
@@ -225,8 +231,71 @@
                 app:tabTextColor="@android:color/white" />
 
         </RelativeLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_fcn"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginBottom="15dp"
+            android:orientation="horizontal"
+            android:layout_gravity="right"
+            android:visibility="gone">
+
+            <EditText
+                android:id="@+id/et_fcn1"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/bound_gray_5dp"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:hint="频点1"
+                android:textColorHint="@color/gray_ee"
+                android:gravity="center"
+                android:singleLine="true"
+                android:maxLength="5"
+                android:digits="@string/number_rule"/>
+            <EditText
+                android:id="@+id/et_fcn2"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/bound_gray_5dp"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:hint="频点2"
+                android:textColorHint="@color/gray_ee"
+                android:gravity="center"
+                android:layout_marginLeft="12dp"
+                android:singleLine="true"
+                android:maxLength="5"
+                android:digits="@string/number_rule"/>
+            <EditText
+                android:id="@+id/et_fcn3"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/bound_gray_5dp"
+                android:textSize="14sp"
+                android:textColor="@android:color/white"
+                android:hint="频点3"
+                android:textColorHint="@color/gray_ee"
+                android:gravity="center"
+                android:layout_marginRight="15dp"
+                android:layout_marginLeft="12dp"
+                android:singleLine="true"
+                android:maxLength="5"
+                android:digits="@string/number_rule"/>
+
+        </LinearLayout>
         
     </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_similar_number"
+        android:layout_width="120dp"
+        android:layout_height="180dp"
+        android:background="@drawable/bound_black_5dp"
+        android:layout_marginTop="104dp"
+        android:layout_marginLeft="120dp"
+        android:visibility="gone"/>
     
     <Button
         android:id="@+id/btn_location"

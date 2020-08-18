@@ -1,4 +1,4 @@
-package com.synway.passive.location.fragment;
+package com.synway.passive.location.widget;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

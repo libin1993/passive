@@ -3,10 +3,11 @@ package com.synway.passive.location.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -15,21 +16,28 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.BaseViewHolder;
+import com.orhanobut.logger.Logger;
 import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseFragment;
 import com.synway.passive.location.bean.CellBean;
+import com.synway.passive.location.bean.NameListBean;
+import com.synway.passive.location.greendao.SQLiteUtils;
 import com.synway.passive.location.socket.BluetoothSocketUtils;
 import com.synway.passive.location.socket.LteSendManager;
 import com.synway.passive.location.socket.MsgType;
-import com.synway.passive.location.ui.MainActivity;
-import com.synway.passive.location.ui.PhoneNumberManageActivity;
+import com.synway.passive.location.ui.NameListActivity;
 import com.synway.passive.location.utils.CacheManager;
 import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LoadingUtils;
 import com.synway.passive.location.utils.ToastUtils;
+import com.synway.passive.location.widget.DetectFailedDialog;
+import com.synway.passive.location.widget.RVDividerItemDecoration;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -37,8 +45,6 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -68,8 +74,23 @@ public class PhoneInfoFragment extends BaseFragment {
     Button btnLocation;
     @BindView(R.id.clToManagePhoneNumberList)
     RelativeLayout clToManagePhoneNumberList;
+    @BindView(R.id.rv_similar_number)
+    RecyclerView rvNumber;
+    @BindView(R.id.et_fcn1)
+    EditText etFcn1;
+    @BindView(R.id.et_fcn2)
+    EditText etFcn2;
+    @BindView(R.id.et_fcn3)
+    EditText etFcn3;
+    @BindView(R.id.ll_fcn)
+    LinearLayout llFcn;
+    @BindView(R.id.rl_root)
+    RelativeLayout rlRoot;
 
     private boolean searchSuccess = false;
+
+    private List<NameListBean> nameList = new ArrayList<>();
+    private BaseQuickAdapter<NameListBean, BaseViewHolder> adapter;
 
     @Nullable
     @Override
@@ -99,27 +120,79 @@ public class PhoneInfoFragment extends BaseFragment {
         clToManagePhoneNumberList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), PhoneNumberManageActivity.class);
+                Intent intent = new Intent(getActivity(), NameListActivity.class);
+                intent.putExtra("flag", 1);
                 getParentFragment().getActivity().startActivity(intent);
             }
         });
 
-        etPhoneNumber.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        etPhoneNumber.addTextChangedListener(textWatcher);
 
+
+        rvNumber.setLayoutManager(new LinearLayoutManager(getParentFragment().getActivity()));
+        rvNumber.addItemDecoration(new RVDividerItemDecoration(getParentFragment().getActivity()));
+        adapter = new BaseQuickAdapter<NameListBean, BaseViewHolder>(R.layout.layout_phone_number_item, nameList) {
+            @Override
+            protected void convert(BaseViewHolder helper, NameListBean item) {
+                helper.setText(R.id.tv_similar_number, item.getPhone());
             }
+        };
+        rvNumber.setAdapter(adapter);
 
+        adapter.setOnItemClickListener(new BaseQuickAdapter.OnItemClickListener() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                CacheManager.phoneNumber = s.toString().trim();
+            public void onItemClick(BaseQuickAdapter adapter, View view, int position) {
+                rvNumber.setVisibility(View.GONE);
+                selectResult(nameList.get(position));
             }
         });
+
+
+    }
+
+    private TextWatcher textWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            String number = s.toString().trim();
+            if (!TextUtils.isEmpty(number)) {
+
+                if (number.length() == 11) {
+                    int vendor = FormatUtils.getInstance().isPhoneNumber(number);
+                    tabLayoutStandard.getTabAt(vendor - 1).select();
+                }
+
+                similarNumber(number);
+            } else {
+                rvNumber.setVisibility(View.GONE);
+            }
+
+        }
+    };
+
+    /**
+     * @param number 号码输入提示
+     */
+    private void similarNumber(String number) {
+        nameList.clear();
+        List<NameListBean> nameListBeans = SQLiteUtils.getInstance().querySimilarNumber(number);
+        if (nameListBeans != null && nameListBeans.size() > 0) {
+            Logger.d("数量：" + nameListBeans.size());
+            rvNumber.setVisibility(View.VISIBLE);
+            nameList.addAll(nameListBeans);
+        } else {
+            rvNumber.setVisibility(View.GONE);
+        }
+        adapter.notifyDataSetChanged();
 
     }
 
@@ -156,6 +229,12 @@ public class PhoneInfoFragment extends BaseFragment {
 
                 if (type == 1) {
                     CacheManager.vendor = tab.getPosition() + 1;
+                } else {
+                    if (tabLayoutFcn.getSelectedTabPosition() == 1) {
+                        llFcn.setVisibility(View.VISIBLE);
+                    } else {
+                        llFcn.setVisibility(View.GONE);
+                    }
                 }
 
             }
@@ -184,16 +263,17 @@ public class PhoneInfoFragment extends BaseFragment {
         return fragment;
     }
 
-
-    @OnClick(R.id.btn_location)
-    public void onViewClicked() {
+    /**
+     * 搜索小区
+     */
+    private void searchCell(){
         if (!BluetoothSocketUtils.getInstance().isConnected()) {
             ToastUtils.getInstance().showToast("请先连接蓝牙");
             return;
         }
 
         searchSuccess = false;
-        final String phoneNumber = etPhoneNumber.getText().toString().trim();
+        String phoneNumber = etPhoneNumber.getText().toString().trim();
         if (TextUtils.isEmpty(phoneNumber) || phoneNumber.length() != 11) {
             ToastUtils.getInstance().showToast("请输入11位手机号");
             return;
@@ -220,8 +300,40 @@ public class PhoneInfoFragment extends BaseFragment {
         int vendor = tabLayoutStandard.getSelectedTabPosition() + 1;
         CacheManager.vendor = vendor;
 
-        int searchMode = 0;
-        int[] fcnArray = FormatUtils.getInstance().getDefaultFcn(vendor);
+        int searchMode = tabLayoutFcn.getSelectedTabPosition();
+        int[] fcnArray;
+        if (searchMode == 0) {
+            fcnArray = FormatUtils.getInstance().getDefaultFcn(vendor);
+        } else {
+            String fcn1 = etFcn1.getText().toString().trim();
+            String fcn2 = etFcn2.getText().toString().trim();
+            String fcn3 = etFcn3.getText().toString().trim();
+
+            List<Integer> fcnList = new ArrayList<>();
+
+            if (!TextUtils.isEmpty(fcn1) && Integer.parseInt(fcn1) > 0) {
+                fcnList.add(Integer.parseInt(fcn1));
+            }
+            if (!TextUtils.isEmpty(fcn2) && Integer.parseInt(fcn2) > 0) {
+                fcnList.add(Integer.parseInt(fcn2));
+            }
+
+            if (!TextUtils.isEmpty(fcn3) && Integer.parseInt(fcn3) > 0) {
+                fcnList.add(Integer.parseInt(fcn3));
+            }
+
+            if (fcnList.size() > 0) {
+                fcnArray = new int[fcnList.size()];
+                for (int i = 0; i < fcnList.size(); i++) {
+                    fcnArray[i] = fcnList.get(i);
+                }
+            } else {
+                ToastUtils.getInstance().showToast("请输入频点");
+                return;
+            }
+
+        }
+
 
         LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(), "定位中");
 
@@ -245,8 +357,24 @@ public class PhoneInfoFragment extends BaseFragment {
 //            return;
 //        }
 
+        NameListBean nameListBean = SQLiteUtils.getInstance().queryNameList(phoneNumber);   //插入名单
+        if (nameListBean != null) {
+            if (!nameListBean.getName().equals(etName.getText().toString().trim())) {
+                nameListBean.setName(etName.getText().toString().trim());
+                SQLiteUtils.getInstance().insertNameList(nameListBean);
+            }
+        } else {
+            NameListBean nameBean = new NameListBean();
+            nameBean.setName(etName.getText().toString().trim());
+            nameBean.setPhone(phoneNumber);
+            nameBean.setVendor(vendor);
+            nameBean.setRemark("");
 
-        LteSendManager.searchCell(vendor, phoneNumber, searchMode, fcnArray, "", "");
+            SQLiteUtils.getInstance().insertNameList(nameBean);
+        }
+
+
+        LteSendManager.searchCell(vendor, phoneNumber, fcnArray, "", "");
 
         new CountDownTimer(15000, 1000) {
             @Override
@@ -254,8 +382,8 @@ public class PhoneInfoFragment extends BaseFragment {
                 if (searchSuccess) {
                     cancel();
                     CellBean cellBean = CacheManager.getCell();
-                    if (cellBean !=null){
-                        LteSendManager.lockCell(cellBean.getCid(),cellBean.getFreq());
+                    if (cellBean != null) {
+                        LteSendManager.lockCell(cellBean.getCid(), cellBean.getFreq());
                     }
                     LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
                 }
@@ -271,27 +399,42 @@ public class PhoneInfoFragment extends BaseFragment {
                         return;
                     }
                     DetectFailedDialog detectFailedDialog = new DetectFailedDialog();
-                    detectFailedDialog.setCancelable(false);
-                    detectFailedDialog.show(getChildFragmentManager(), "");
+                    detectFailedDialog.show(getChildFragmentManager(), "searchCell");
                 }
             }
         }.start();
+    }
 
 
+    /**
+     *
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void searchResult(String result) {
+        if (MsgType.SEARCH_SUCCESS.equals(result)) {
+            searchSuccess = true;
+        } else if (MsgType.RESEARCH_CELL.equals(result)) {
+            searchCell();
+        } else if (MsgType.LOCATION_FAIL.equals(result)) {
+            ToastUtils.getInstance().showToast("定位失败");
+        }
     }
 
     /**
      *
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void scanResult(String result) {
-        if (MsgType.SEARCH_SUCCESS.equals(result)) {
-            searchSuccess = true;
-        } else if (MsgType.RESEARCH_CELL.equals(result)) {
-            onViewClicked();
-        }else if (MsgType.LOCATION_FAIL.equals(result)){
-            ToastUtils.getInstance().showToast("定位失败");
+    public void selectResult(NameListBean nameListBean) {
+        if (nameListBean != null) {
+            Logger.d(nameListBean.toString());
+            etName.setText(nameListBean.getName());
+            etPhoneNumber.removeTextChangedListener(textWatcher);
+            etPhoneNumber.setText(nameListBean.getPhone());
+            etPhoneNumber.setSelection(nameListBean.getPhone().length());
+            etPhoneNumber.addTextChangedListener(textWatcher);
+            tabLayoutStandard.getTabAt(nameListBean.getVendor() - 1).select();
         }
+
     }
 
 
@@ -302,4 +445,18 @@ public class PhoneInfoFragment extends BaseFragment {
         EventBus.getDefault().unregister(this);
     }
 
+
+    @OnClick({R.id.btn_location, R.id.rl_root})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.btn_location:
+                searchCell();
+                break;
+            case R.id.rl_root:
+                if (rvNumber.getVisibility() == View.VISIBLE){
+                    rvNumber.setVisibility(View.GONE);
+                }
+                break;
+        }
+    }
 }

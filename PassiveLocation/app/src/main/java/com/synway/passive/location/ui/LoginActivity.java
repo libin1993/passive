@@ -43,6 +43,7 @@ public class LoginActivity extends BaseActivity {
         adminPassword = (String) SPUtils.getInstance().get(SPUtils.ADMIN_PASSWORD, "admin");
 
         etAccount.setText(adminAccount);
+        etAccount.setSelection(adminAccount.length());
         etPassword.setText(adminPassword);
     }
 

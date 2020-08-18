@@ -1,7 +1,15 @@
 package com.synway.passive.location.utils;
 
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
+import android.telephony.SmsManager;
 import android.text.TextUtils;
+
+import com.synway.passive.location.application.MyApplication;
+import com.synway.passive.location.receiver.SMSReceiver;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -79,5 +87,27 @@ public class OSUtils {
             }
         }
         return line;
+    }
+
+    /**
+     * @param phone  发送短信
+     * @param msg
+     */
+    public void sendMsg(Context context,String phone, String msg){
+
+        /* 创建自定义Action常数的Intent(给PendingIntent参数之用) */
+        Intent itSend = new Intent("lab.sodino.sms.send");
+        Intent itDeliver = new Intent("lab.sodino.sms.delivery");
+
+        /* sentIntent参数为传送后接受的广播信息PendingIntent */
+        PendingIntent mSendPI = PendingIntent.getBroadcast
+                (MyApplication.getInstance(), 0, itSend, 0);
+
+        /* deliveryIntent参数为送达后接受的广播信息PendingIntent */
+        PendingIntent mDeliverPI = PendingIntent.getBroadcast
+                (MyApplication.getInstance(), 0, itDeliver, 0);
+
+        SmsManager manager = SmsManager.getDefault();
+        manager.sendTextMessage(phone,null,msg,mSendPI,mDeliverPI);
     }
 }

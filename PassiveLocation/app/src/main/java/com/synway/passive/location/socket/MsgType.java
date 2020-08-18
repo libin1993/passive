@@ -81,4 +81,5 @@ public class MsgType {
     public final static String MONITOR_FAIL = "monitorFail"; //检测失败
     public final static String TRIGGER_SUCCESS = "triggerSuccess"; //诱发成功
     public final static String TRIGGER_FAIL = "triggerFail"; //诱发失败
+    public final static String QUERY_NAME_LIST = "queryNameList"; //名单查询
 }

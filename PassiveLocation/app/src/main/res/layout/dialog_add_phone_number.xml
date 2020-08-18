@@ -19,14 +19,15 @@
 
         <TextView
             style="@style/dialog_label"
-            android:text="@string/phone_number_list_name" />
+            android:text="@string/phone_number_list_name"
+            android:textSize="14sp" />
 
         <EditText
-            android:id="@+id/etIMSI"
+            android:id="@+id/et_target_name"
             style="@style/dialog_edit"
             android:singleLine="true"
-            android:maxLength="15"
-            android:inputType="number" />
+            android:maxLength="5"
+            android:ellipsize="end"/>
     </LinearLayout>
 
     <LinearLayout
@@ -39,32 +40,59 @@
 
         <TextView
             style="@style/dialog_label"
-            android:text="@string/phone_number_list_number" />
+            android:text="@string/phone_number_list_number"
+            android:textSize="14sp"/>
 
         <EditText
-            android:id="@+id/etMsisdn"
+            android:id="@+id/et_target_phone"
             style="@style/dialog_edit"
             android:textCursorDrawable="@null"
             android:singleLine="true"
             android:maxLength="11"
-            android:inputType="number" />
+            android:inputType="phone"
+            android:digits="@string/number_rule"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="horizontal"
+       >
+
+        <TextView
+            style="@style/dialog_label"
+            android:text="运营商"
+            android:textSize="14sp"/>
+
+        <Spinner
+            android:id="@+id/spinner_vendor"
+            android:layout_width="match_parent"
+            android:layout_height="34dp"
+            android:background="@drawable/comman_edit_text_bkg"
+            android:gravity="center_vertical"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:dropDownVerticalOffset="34dp"/>
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
 
         <TextView
             style="@style/dialog_label"
-            android:text="@string/phone_number_list_remark" />
+            android:text="@string/phone_number_list_remark"
+            android:textSize="14sp"/>
 
         <EditText
-            android:id="@+id/etRemark"
+            android:id="@+id/et_target_remark"
             style="@style/dialog_edit"
             android:textCursorDrawable="@null"
-            android:singleLine="true" />
+            android:singleLine="true"
+            android:maxLength="6"/>
     </LinearLayout>
 
     <LinearLayout
@@ -75,20 +103,20 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/btWhitelist"
+            android:id="@+id/btn_cancel_edit"
             android:layout_height="36dp"
             android:textColor="@color/darkorange"
             android:background="@drawable/comman_button_bkg"
             android:layout_width="88dp"
-            android:text="@string/add" />
+            android:text="@string/cancel" />
 
         <Button
-            android:id="@+id/btCancel"
+            android:id="@+id/btn_edit_name_list"
             android:textColor="@color/darkorange"
             android:background="@drawable/comman_button_bkg"
             android:layout_height="36dp"
             android:layout_marginStart="18dp"
             android:layout_width="88dp"
-            android:text="@string/cancel" />
+            android:text="@string/add"/>
     </LinearLayout>
 </LinearLayout>

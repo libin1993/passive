@@ -3,6 +3,7 @@ package com.synway.passive.location.socket;
 import android.text.TextUtils;
 
 
+import com.orhanobut.logger.Logger;
 import com.synway.passive.location.utils.CacheManager;
 import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LogUtils;
@@ -30,12 +31,10 @@ public class LteSendManager {
      *
      * @param vendor            运营商
      * @param targetPhoneNumber 目标手机号
-     * @param searchMode        搜索模式
      * @param lac
      * @param cid
      */
-    public static void searchCell(int vendor, String targetPhoneNumber,
-                                  int searchMode, int[] fcns, String lac, String cid) {
+    public static void searchCell(int vendor, String targetPhoneNumber, int[] fcns, String lac, String cid) {
         byte[] protocolBytes = new byte[]{(byte) 7};
         byte[] vendorBytes = new byte[]{(byte) vendor};
 
@@ -67,7 +66,7 @@ public class LteSendManager {
 
         byte[] thresholdBytes = new byte[]{5};
         byte[] mmecBytes = FormatUtils.getInstance().hexStringToBytes("FF");
-        byte[] searchModeBytes = new byte[]{(byte) searchMode};
+        byte[] searchModeBytes = new byte[]{0};
         byte[] freqNumBytes;
 
 
@@ -320,9 +319,7 @@ public class LteSendManager {
 
         byte[] bytes = byteArray.toByteArray();
 
-        LogUtils.log("发送数据长度：" + bytes.length);
-        LogUtils.log("发送数据类型：" + Integer.toHexString(msgType));
-        LogUtils.log("发送数据：" + FormatUtils.getInstance().bytesToHexString(bytes));
+        Logger.d("发送数据：" + Integer.toHexString(msgType)+":"+FormatUtils.getInstance().bytesToHexString(bytes));
 
 
         SocketUtils.getInstance().sendData(bytes);

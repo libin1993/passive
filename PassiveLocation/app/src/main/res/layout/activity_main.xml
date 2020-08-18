@@ -23,4 +23,66 @@
         app:tl_textUnselectColor="@color/gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:tl_textsize="14sp" />
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        android:gravity="center_vertical">
+
+        <TextClock
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:format24Hour="HH:mm"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:layout_marginLeft="10dp"/>
+
+        <ImageView
+            android:id="@+id/iv_bluetooth_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/ic_bluetooth"
+            android:scaleType="fitCenter"
+            android:layout_marginLeft="15dp"
+            android:visibility="gone"/>
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/tv_temperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textSize="10sp"
+            android:visibility="gone"
+            android:background="@drawable/bound_white_3dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:layout_marginRight="15dp"/>
+
+        <com.synway.passive.location.widget.BatteryView
+            android:id="@+id/battery_view"
+            android:layout_width="20dp"
+            android:layout_height="9dp"
+            android:visibility="gone"
+            android:layout_marginRight="5dp"/>
+
+        <TextView
+            android:id="@+id/tv_battery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/white"
+            android:textSize="12sp"
+            android:layout_marginRight="10dp"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+
 </android.support.constraint.ConstraintLayout>
