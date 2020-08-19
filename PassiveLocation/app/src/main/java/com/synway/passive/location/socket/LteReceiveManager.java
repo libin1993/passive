@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.synway.passive.location.socket.MsgType.RCV_TARGET_CELL_SET_ACK;
+
 /**
  * Author：Libin on 2020/6/10 11:05
  * Email：1993911441@qq.com
@@ -136,7 +138,8 @@ public class LteReceiveManager {
         System.arraycopy(tempPackage, 66, tempReserve, 0, 16);
         ltePackage.setReserve(tempReserve);
 
-        Logger.d("接收数据："+Integer.toHexString(ltePackage.getType())+":"+FormatUtils.getInstance().bytesToHexString(tempPackage));
+        Logger.d("接收数据："+FormatUtils.getInstance().bytesToHexString(tempPackage));
+        LogUtils.log("接收数据"+Integer.toHexString(ltePackage.getType())+":"+FormatUtils.getInstance().bytesToHexString(tempPackage));
 
         //包内容
         if (dataLength > 0) {
@@ -147,7 +150,6 @@ public class LteReceiveManager {
         }
 
 
-        LogUtils.log(ltePackage.toString());
         msgType(ltePackage);
 
     }
@@ -188,7 +190,7 @@ public class LteReceiveManager {
             case MsgType.RCV_MONITOR_CMD:
                 parseCommon(ltePackage);
                 break;
-            case MsgType.RCV_TARGET_CELL_SET_ACK:
+            case RCV_TARGET_CELL_SET_ACK:
                 parseCommon(ltePackage);
                 break;
         }
@@ -214,12 +216,12 @@ public class LteReceiveManager {
                 }
                 break;
             case MsgType.RCV_MONITOR_CMD:
-                LoadingUtils.getInstance().dismiss();
-                if (status == 0){
-                    EventBus.getDefault().post(MsgType.MONITOR_SUCCESS);
-                }else {
-                    EventBus.getDefault().post(MsgType.MONITOR_FAIL);
-                }
+//                LoadingUtils.getInstance().dismiss();
+//                if (status == 0){
+//                    EventBus.getDefault().post(MsgType.MONITOR_SUCCESS);
+//                }else {
+//                    EventBus.getDefault().post(MsgType.MONITOR_FAIL);
+//                }
                 break;
             case MsgType.RCV_TRIGGER_ACK:
                 LoadingUtils.getInstance().dismiss();
@@ -228,6 +230,9 @@ public class LteReceiveManager {
                 }else {
                     EventBus.getDefault().post(MsgType.TRIGGER_FAIL);
                 }
+                break;
+            case RCV_TARGET_CELL_SET_ACK:
+                LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
                 break;
         }
 
@@ -265,7 +270,7 @@ public class LteReceiveManager {
             cellBean.setCellErrorRate(cellBytes[i+880]);
             cellBean.setHit(cellBytes[i+1120]);
 
-            Logger.d("小区上报："+cellNum+":"+cellBean.toString());
+            LogUtils.log("小区上报："+cellNum+":"+cellBean.toString());
 
             CacheManager.cellMap.put(cellBean.getLac()+","+cellBean.getCid(),cellBean);
 
@@ -296,7 +301,7 @@ public class LteReceiveManager {
 
             LogUtils.log("dbm："+dbm);
             if (dbm !=0){
-                dbmList.add(dbm);
+                dbmList.add((short) (dbm+140));
             }
 
         }
@@ -335,7 +340,6 @@ public class LteReceiveManager {
         System.arraycopy(ltePackage.getData(), 4, msgBytes, 0, ltePackage.getDataLength() - 4);
         String msg = new String(msgBytes, StandardCharsets.UTF_8);
         deviceStatus.setMsg(msg);
-        Logger.d("设备状态："+deviceStatus.toString());
 
         EventBus.getDefault().post(deviceStatus);
     }

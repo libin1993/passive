@@ -14,32 +14,9 @@
         android:layout_height="200dp"/>
 
 
-    <RelativeLayout
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center">
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@mipmap/icon_ring3"
-            android:scaleType="fitCenter"
-            android:layout_centerInParent="true"/>
-        <ImageView
-
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@mipmap/icon_ring2"
-            android:scaleType="fitCenter"
-            android:layout_centerInParent="true"/>
-        <ImageView
-            android:id="@+id/view_ring"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@mipmap/icon_ring1"
-            android:scaleType="fitCenter"
-            android:layout_centerInParent="true"/>
-
-
-    </RelativeLayout>
-
+<com.synway.passive.location.widget.LineView
+    android:id="@+id/lineView"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
+    android:layout_gravity="center_horizontal"/>
 </LinearLayout>

@@ -47,7 +47,7 @@ public class ToastUtils {
      */
     public void showToastOnThread(String msg) {
         Looper.prepare();
-        showToast(msg);
+        Toast.makeText(MyApplication.getInstance(), msg, Toast.LENGTH_SHORT).show();
         Looper.loop();
     }
 
@@ -59,7 +59,6 @@ public class ToastUtils {
         if (TextUtils.isEmpty(msg)) {
             return;
         }
-
 
         if (mToast == null) {
             mToast = Toast.makeText(MyApplication.getInstance(), msg, Toast.LENGTH_SHORT);
@@ -74,6 +73,7 @@ public class ToastUtils {
             return;
         }
         mToast.show();
+
 
     }
 

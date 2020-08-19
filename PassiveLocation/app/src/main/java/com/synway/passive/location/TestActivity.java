@@ -50,8 +50,7 @@ public class TestActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     @BindView(R.id.line_chart)
     LineChart lineChart;
-    @BindView(R.id.view_ring)
-    ImageView viewRing;
+
     private List<Integer> dataList = new ArrayList<>();
     private BaseQuickAdapter<Integer, BaseViewHolder> adapter;
     private LineDataSet lineDataSet;
@@ -170,10 +169,7 @@ public class TestActivity extends AppCompatActivity {
             }
         }.start();
 
-        Animation rotateAnimation = AnimationUtils.loadAnimation(this, R.anim.rotate_anim);
-        LinearInterpolator lin = new LinearInterpolator();
-        rotateAnimation.setInterpolator(lin);
-        viewRing.startAnimation(rotateAnimation);
+
     }
 
     /**

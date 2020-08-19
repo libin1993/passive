@@ -69,5 +69,6 @@ public class LoginActivity extends BaseActivity {
         }
 
         startActivity(new Intent(LoginActivity.this, MainActivity.class));
+        finish();
     }
 }

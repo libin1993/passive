@@ -89,6 +89,7 @@ public class BluetoothSocketUtils {
 //                LogUtils.log("创建BluetoothSocket失败："+e.toString());
 //            }
             if (bluetoothSocket == null){
+                LoadingUtils.getInstance().dismiss();
                 ToastUtils.getInstance().showToastOnThread("蓝牙连接失败");
                 return;
             }

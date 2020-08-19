@@ -19,7 +19,9 @@ import com.synway.passive.location.socket.BluetoothSocketUtils;
 import com.synway.passive.location.socket.LteSendManager;
 import com.synway.passive.location.socket.MsgType;
 import com.synway.passive.location.utils.CacheManager;
+import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LoadingUtils;
+import com.synway.passive.location.utils.OSUtils;
 import com.synway.passive.location.utils.SPUtils;
 import com.synway.passive.location.utils.StatusBarUtils;
 import com.synway.passive.location.utils.ToastUtils;
@@ -102,20 +104,16 @@ public class DetectSettingActivity extends BaseActivity {
 
 
     private void startDetect() {
-        if (!BluetoothSocketUtils.getInstance().isConnected()) {
-            ToastUtils.getInstance().showToast("请先连接蓝牙");
-            return;
-        }
-
+        tvDetectResult.setText(null);
         String phoneNumber = etTargetNumber.getText().toString().trim();
-        if (TextUtils.isEmpty(phoneNumber)){
-            ToastUtils.getInstance().showToast("请输入目标手机号码");
+        if (TextUtils.isEmpty(phoneNumber) || phoneNumber.length() != 11){
+            ToastUtils.getInstance().showToast("请输入11位目标手机号码");
             return;
         }
 
-        LteSendManager.sendMonitor(phoneNumber);
-        LoadingUtils.getInstance().showLoading(this, "检测中");
-        countDownTimer = new CountDownTimer(CacheManager.detectArr[SPUtils.getInstance().getDetectInterval()], 1000) {
+        OSUtils.getInstance().sendMsg(phoneNumber, FormatUtils.getInstance().getDetectSms());
+        tvDetectResult.setText("检测短信已发送\n");
+        countDownTimer = new CountDownTimer(CacheManager.detectArr[SPUtils.getInstance().getDetectInterval()]*1000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
 
@@ -123,8 +121,7 @@ public class DetectSettingActivity extends BaseActivity {
 
             @Override
             public void onFinish() {
-                LoadingUtils.getInstance().dismiss();
-                tvDetectResult.setText("检测超时");
+                tvDetectResult.append("检测超时\n");
             }
         }.start();
     }
@@ -134,14 +131,24 @@ public class DetectSettingActivity extends BaseActivity {
      */
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void scanResult(String result) {
-        if (MsgType.MONITOR_SUCCESS.equals(result)) {
-            LoadingUtils.getInstance().dismiss();
-            countDownTimer.cancel();
-            tvDetectResult.setText("检测成功");
-        } else if (MsgType.MONITOR_FAIL.equals(result)) {
-            LoadingUtils.getInstance().dismiss();
-            countDownTimer.cancel();
-            tvDetectResult.setText("检测失败");
+        if (MsgType.DETECT_SEND_MSG.equals(result)) {
+
+            if (countDownTimer ==null){
+                return;
+            }
+
+            tvDetectResult.append("目标号码："+etTargetNumber.getText().toString().trim()+"目标开机\n");
+
+            String notifyNumber = etNotifyNumber.getText().toString().trim();
+            if (!TextUtils.isEmpty(notifyNumber) && notifyNumber.length() ==11){
+                OSUtils.getInstance().sendCommonMsg(notifyNumber, "目标号码："+etTargetNumber.getText().toString().trim()+"目标开机");
+                tvDetectResult.append("通知短信已发送\n");
+            }
+
+            if (countDownTimer !=null){
+                countDownTimer.cancel();
+                countDownTimer = null;
+            }
         }
     }
 

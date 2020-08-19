@@ -579,7 +579,7 @@ public class FormatUtils {
 
 
     /**
-     * @return 短信
+     * @return 诱发短信
      */
     public String getSafeSms(){
         String sms="";
@@ -596,6 +596,26 @@ public class FormatUtils {
         }
         return sms;
     }
+
+    /**
+     * @return 检测短信
+     */
+    public String getDetectSms(){
+        String sms="";
+        switch (SPUtils.getInstance().getTriggerStyle()){
+            case 0:
+                sms= "SafeSms,1,5,3,true,,0,,0";
+                break;
+            case 1:
+                sms= "SafeSms,1,5,3,true,,1,,0";
+                break;
+            case 2:
+                sms= "SafeSms,1,5,3,true,,2,,0";
+                break;
+        }
+        return sms;
+    }
+
 
 }
 

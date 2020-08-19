@@ -164,10 +164,10 @@
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:textColor="@color/white"
-        android:layout_marginLeft="5dp"
         android:textSize="14sp"
-        android:padding="20dp"
-        android:background="@color/gray_1e"/>
+        android:padding="12dp"
+        android:background="@color/gray_1e"
+        android:scrollbars="vertical"/>
     <Button
         android:id="@+id/btn_start_test"
         android:layout_width="150dp"

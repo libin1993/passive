@@ -10,6 +10,6 @@ import android.util.Log;
 public class LogUtils {
 
     public static void log(String log) {
-//        Log.d("libin", log);
+        Log.d("libin", log);
     }
 }

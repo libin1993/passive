@@ -27,6 +27,16 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="8dp" />
+
+        <ImageView
+            android:id="@+id/iv_refresh"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@mipmap/ic_refresh"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/cb_bluetooth"
+            android:layout_marginRight="20dp"
+            android:scaleType="fitCenter"/>
     </RelativeLayout>
 
 

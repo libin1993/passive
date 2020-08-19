@@ -45,13 +45,13 @@ public class SocketUtils {
      * @param
      */
     public void connect() {
+        if (mSocket != null && mSocket.isConnected()){
+            return;
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    if (mSocket != null && mSocket.isConnected()){
-                        return;
-                    }
 
                     mSocket = new Socket("127.0.0.1",8818);
                     mSocket.setSoTimeout(READ_TIME_OUT);      //设置超时

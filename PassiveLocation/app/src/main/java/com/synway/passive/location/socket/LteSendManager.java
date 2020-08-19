@@ -64,7 +64,7 @@ public class LteSendManager {
         byte[] imsiBytes = FormatUtils.getInstance().longToBytes(imsi);
         FormatUtils.getInstance().reverseData(imsiBytes);
 
-        byte[] thresholdBytes = new byte[]{5};
+        byte[] thresholdBytes = FormatUtils.getInstance().hexStringToBytes("FF");
         byte[] mmecBytes = FormatUtils.getInstance().hexStringToBytes("FF");
         byte[] searchModeBytes = new byte[]{0};
         byte[] freqNumBytes;
@@ -154,7 +154,7 @@ public class LteSendManager {
         byte[] errorCodeBytes = new byte[4];
 
         byte[] flagBytes = new byte[]{0};
-        ByteArrayBuffer byteArray = new ByteArrayBuffer(13);
+        ByteArrayBuffer byteArray = new ByteArrayBuffer(5);
         byteArray.append(errorCodeBytes, 0, errorCodeBytes.length);
         byteArray.append(flagBytes, 0, flagBytes.length);
 
@@ -319,8 +319,9 @@ public class LteSendManager {
 
         byte[] bytes = byteArray.toByteArray();
 
-        Logger.d("发送数据：" + Integer.toHexString(msgType)+":"+FormatUtils.getInstance().bytesToHexString(bytes));
+        Logger.d("发送数据："+FormatUtils.getInstance().bytesToHexString(bytes));
 
+        LogUtils.log("发送数据"+Integer.toHexString(msgType)+":"+FormatUtils.getInstance().bytesToHexString(bytes));
 
         SocketUtils.getInstance().sendData(bytes);
 

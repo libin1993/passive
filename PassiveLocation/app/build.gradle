@@ -18,6 +18,22 @@ android {
         ndk {
             abiFilters  "armeabi"
         }
+
+        lintOptions {
+            checkReleaseBuilds false
+            abortOnError false
+        }
+    }
+
+    //签名
+    signingConfigs {
+        relealse {
+            //这样写就得把demo.jk文件放在项目目录
+            storeFile file("../4GHot.jks")
+            storePassword "88861158"
+            keyAlias "key"
+            keyPassword "88861158"
+        }
     }
 
     buildTypes {

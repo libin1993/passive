@@ -6,6 +6,10 @@ import android.content.Intent;
 
 import com.orhanobut.logger.Logger;
 import com.synway.passive.location.socket.LteSendManager;
+import com.synway.passive.location.socket.MsgType;
+import com.synway.passive.location.utils.LogUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 
 /**
@@ -21,12 +25,12 @@ public class SMSReceiver extends BroadcastReceiver {
         String action = intent.getAction();
         switch (action){
             case ACTION_SMS_SEND:
-                Logger.d("短信发送结果：发送成功");
+                LogUtils.log("短信发送结果：发送成功");
                 LteSendManager.stopTrigger();
                 break;
             case ACTION_SMS_DELIVERY:
-                Logger.d("短信发送结果：对方接收成功");
-
+                LogUtils.log("短信发送结果：已接收");
+                EventBus.getDefault().post(MsgType.DETECT_SEND_MSG);
                 break;
         }
     }

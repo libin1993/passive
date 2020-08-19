@@ -89,11 +89,16 @@ public class OSUtils {
         return line;
     }
 
+    public void sendCommonMsg(String phone, String msg){
+        SmsManager manager = SmsManager.getDefault();
+        manager.sendTextMessage(phone,null,msg,null,null);
+    }
+
     /**
      * @param phone  发送短信
      * @param msg
      */
-    public void sendMsg(Context context,String phone, String msg){
+    public void sendMsg(String phone, String msg){
 
         /* 创建自定义Action常数的Intent(给PendingIntent参数之用) */
         Intent itSend = new Intent("lab.sodino.sms.send");

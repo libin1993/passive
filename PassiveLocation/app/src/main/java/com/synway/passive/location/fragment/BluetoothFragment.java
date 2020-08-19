@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -39,6 +40,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
@@ -53,6 +55,8 @@ public class BluetoothFragment extends BaseFragment {
     RecyclerView rvBluetooth;
     @BindView(R.id.tv_connect_name)
     TextView tvConnectName;
+    @BindView(R.id.iv_refresh)
+    ImageView ivRefresh;
     private Unbinder unbinder;
 
     private BluetoothReceiver bluetoothReceiver;
@@ -108,7 +112,7 @@ public class BluetoothFragment extends BaseFragment {
 
                 if (device.getBondState() == BluetoothDevice.BOND_BONDED) {
                     hasBond = true;
-                    LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(),"正在连接蓝牙");
+                    LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(), "正在连接蓝牙");
                     BluetoothSocketUtils.getInstance().connectBluetoothSocket(device); // 数据扔过去库
                 } else {
                     hasBond = false;
@@ -139,6 +143,8 @@ public class BluetoothFragment extends BaseFragment {
      * 扫描蓝牙
      */
     private void scanBluetooth() {
+        bluetoothList.clear();
+        adapter.notifyDataSetChanged();
         if (bluetoothAdapter.isEnabled()) {
             bluetoothAdapter.startDiscovery();
         } else {
@@ -187,13 +193,13 @@ public class BluetoothFragment extends BaseFragment {
                 tvConnectName.setText("设备连接蓝牙");
                 break;
             case DeviceStatus.BLUETOOTH_CONNECTED:
-                if (!hasBond){
-                    LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(),"正在连接蓝牙");
+                if (!hasBond) {
+                    LoadingUtils.getInstance().showLoading(getParentFragment().getActivity(), "正在连接蓝牙");
                     BluetoothSocketUtils.getInstance().connectBluetoothSocket(device); // 数据扔过去库
                 }
                 break;
             case DeviceStatus.BLUETOOTH_SOCKET_CONNECTED:
-                tvConnectName.setText("设备连接蓝牙    "+device.getName());
+                tvConnectName.setText("设备连接蓝牙    " + device.getName());
                 ((ParameterFragment) getParentFragment()).selectItem(1);
                 break;
         }
@@ -207,11 +213,10 @@ public class BluetoothFragment extends BaseFragment {
         cbBluetooth.setOnCheckedChangeListener(null);
         cbBluetooth.setChecked(isOpen);
         cbBluetooth.setOnCheckedChangeListener(checkedChangeListener);
+        bluetoothList.clear();
+        adapter.notifyDataSetChanged();
         if (isOpen) {
             scanBluetooth();
-        } else {
-            bluetoothList.clear();
-            adapter.notifyDataSetChanged();
         }
     }
 
@@ -232,4 +237,8 @@ public class BluetoothFragment extends BaseFragment {
     }
 
 
+    @OnClick(R.id.iv_refresh)
+    public void onViewClicked() {
+       scanBluetooth();
+    }
 }

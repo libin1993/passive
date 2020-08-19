@@ -3,6 +3,7 @@ package com.synway.passive.location.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -37,6 +38,7 @@ import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LoadingUtils;
 import com.synway.passive.location.utils.ToastUtils;
 import com.synway.passive.location.widget.DetectFailedDialog;
+import com.synway.passive.location.widget.MyCountDownTimer;
 import com.synway.passive.location.widget.RVDividerItemDecoration;
 
 import org.greenrobot.eventbus.EventBus;
@@ -87,10 +89,11 @@ public class PhoneInfoFragment extends BaseFragment {
     @BindView(R.id.rl_root)
     RelativeLayout rlRoot;
 
-    private boolean searchSuccess = false;
 
     private List<NameListBean> nameList = new ArrayList<>();
     private BaseQuickAdapter<NameListBean, BaseViewHolder> adapter;
+
+    private MyCountDownTimer myCountDownTimer;
 
     @Nullable
     @Override
@@ -186,7 +189,6 @@ public class PhoneInfoFragment extends BaseFragment {
         nameList.clear();
         List<NameListBean> nameListBeans = SQLiteUtils.getInstance().querySimilarNumber(number);
         if (nameListBeans != null && nameListBeans.size() > 0) {
-            Logger.d("数量：" + nameListBeans.size());
             rvNumber.setVisibility(View.VISIBLE);
             nameList.addAll(nameListBeans);
         } else {
@@ -272,7 +274,6 @@ public class PhoneInfoFragment extends BaseFragment {
             return;
         }
 
-        searchSuccess = false;
         String phoneNumber = etPhoneNumber.getText().toString().trim();
         if (TextUtils.isEmpty(phoneNumber) || phoneNumber.length() != 11) {
             ToastUtils.getInstance().showToast("请输入11位手机号");
@@ -376,31 +377,21 @@ public class PhoneInfoFragment extends BaseFragment {
 
         LteSendManager.searchCell(vendor, phoneNumber, fcnArray, "", "");
 
-        new CountDownTimer(15000, 1000) {
+        myCountDownTimer = new MyCountDownTimer(15000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
-                if (searchSuccess) {
-                    cancel();
-                    CellBean cellBean = CacheManager.getCell();
-                    if (cellBean != null) {
-                        LteSendManager.lockCell(cellBean.getCid(), cellBean.getFreq());
-                    }
-                    LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
-                }
+
             }
 
             @Override
             public void onFinish() {
                 LoadingUtils.getInstance().dismiss();
-                if (!searchSuccess) {
-                    cancel();
-                    if (CacheManager.cellMap.size() <= 0) {
-                        ToastUtils.getInstance().showToast("未搜索到小区");
-                        return;
-                    }
-                    DetectFailedDialog detectFailedDialog = new DetectFailedDialog();
-                    detectFailedDialog.show(getChildFragmentManager(), "searchCell");
+                if (CacheManager.cellMap.size() <= 0) {
+                    ToastUtils.getInstance().showToast("未搜索到小区");
+                    return;
                 }
+                DetectFailedDialog detectFailedDialog = new DetectFailedDialog();
+                detectFailedDialog.show(getChildFragmentManager(), "searchCell");
             }
         }.start();
     }
@@ -412,7 +403,18 @@ public class PhoneInfoFragment extends BaseFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void searchResult(String result) {
         if (MsgType.SEARCH_SUCCESS.equals(result)) {
-            searchSuccess = true;
+            if (myCountDownTimer !=null){
+                myCountDownTimer.cancel();
+                myCountDownTimer = null;
+            }
+
+            CellBean cellBean = CacheManager.getCell();
+            if (cellBean != null) {
+                LteSendManager.lockCell(cellBean.getCid(), cellBean.getFreq());
+            }else {
+                LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
+            }
+
         } else if (MsgType.RESEARCH_CELL.equals(result)) {
             searchCell();
         } else if (MsgType.LOCATION_FAIL.equals(result)) {
@@ -426,7 +428,6 @@ public class PhoneInfoFragment extends BaseFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void selectResult(NameListBean nameListBean) {
         if (nameListBean != null) {
-            Logger.d(nameListBean.toString());
             etName.setText(nameListBean.getName());
             etPhoneNumber.removeTextChangedListener(textWatcher);
             etPhoneNumber.setText(nameListBean.getPhone());
