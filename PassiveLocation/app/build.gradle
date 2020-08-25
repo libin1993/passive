@@ -55,6 +55,12 @@ android {
         schemaVersion 1
     }
 
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
 }
 
 dependencies {
@@ -93,4 +99,5 @@ dependencies {
     implementation files('libs/SDK_3140_V1.2.17_20200714.jar')
     implementation 'de.hdodenhof:circleimageview:3.1.0'
     implementation 'com.orhanobut:logger:2.2.0'
+    implementation files('libs/5g_sdk_1.0.1.jar')
 }

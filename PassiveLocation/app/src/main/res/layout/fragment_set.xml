@@ -21,7 +21,7 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:paddingTop="20dp"/>
+            android:paddingTop="25dp"/>
 
         <android.support.constraint.ConstraintLayout
             android:id="@+id/clUser"

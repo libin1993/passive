@@ -10,6 +10,11 @@ import android.os.Looper;
 import android.support.multidex.MultiDex;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.hrst.sdk.HrstSdkCient;
+import com.hrst.sdk.dto.report.CellInfosReport;
+import com.hrst.sdk.dto.report.LocationInfoReport;
+import com.hrst.sdk.dto.report.SysStatusReport;
+import com.hrst.sdk.dto.request.CellSearchRequest;
 import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.CsvFormatStrategy;
 import com.orhanobut.logger.DiskLogAdapter;
@@ -50,8 +55,10 @@ public class MyApplication extends Application {
 
         mDaoSession = new DaoMaster(database).newSession();
 
-
         initLogger();
+
+
+
     }
 
     private void initLogger() {

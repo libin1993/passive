@@ -1,4 +1,4 @@
-package com.synway.passive.location;
+package com.synway.passive.location.ui;
 
 import android.graphics.Color;
 import android.graphics.drawable.ClipDrawable;
@@ -13,11 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
-import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LinearInterpolator;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
@@ -32,7 +27,8 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
-import com.synway.passive.location.utils.LogUtils;
+import com.synway.passive.location.R;
+import com.synway.passive.location.widget.CircleProgressView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +46,8 @@ public class TestActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     @BindView(R.id.line_chart)
     LineChart lineChart;
+    @BindView(R.id.lineView)
+    CircleProgressView lineView;
 
     private List<Integer> dataList = new ArrayList<>();
     private BaseQuickAdapter<Integer, BaseViewHolder> adapter;
@@ -169,6 +167,14 @@ public class TestActivity extends AppCompatActivity {
             }
         }.start();
 
+        lineView.startAnim();
+
+//        new Handler().postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                lineView.stopAnim();
+//            }
+//        },10000);
 
     }
 

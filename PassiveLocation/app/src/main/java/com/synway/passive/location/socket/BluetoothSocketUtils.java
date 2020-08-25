@@ -4,6 +4,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
+import com.hrst.sdk.HrstSdkCient;
 import com.synway.passive.location.bean.BluetoothStatus;
 import com.synway.passive.location.bean.DeviceStatus;
 import com.synway.passive.location.ui.MainActivity;

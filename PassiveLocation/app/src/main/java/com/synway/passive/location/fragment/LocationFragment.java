@@ -2,7 +2,6 @@ package com.synway.passive.location.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
-import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -40,6 +39,7 @@ import com.synway.passive.location.utils.LogUtils;
 import com.synway.passive.location.utils.OSUtils;
 import com.synway.passive.location.utils.SPUtils;
 import com.synway.passive.location.utils.ToastUtils;
+import com.synway.passive.location.widget.CircleProgressView;
 import com.synway.passive.location.widget.MyCountDownTimer;
 import com.synway.passive.location.widget.RVDividerItemDecoration;
 
@@ -49,7 +49,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -69,14 +69,14 @@ public class LocationFragment extends BaseFragment {
     LineChart lineChart;
     @BindView(R.id.bntStartInduction)
     Button bntStartInduction;
-    @BindView(R.id.tvEnergyInfo)
-    TextView tvEnergyInfo;
     @BindView(R.id.tvPhoneNumber)
     TextView tvPhoneNumber;
     @BindView(R.id.rv_trigger_status)
     RecyclerView rvTriggerStatus;
     @BindView(R.id.tvInductionHitCount)
     TextView tvInductionHitCount;
+    @BindView(R.id.circle_progress)
+    CircleProgressView circleProgress;
     private Unbinder unbinder;
     private LineDataSet lineDataSet;
     private LineData lineData;
@@ -125,24 +125,23 @@ public class LocationFragment extends BaseFragment {
         axisLeft.setAxisMaximum(120);
 
         XAxis xAxis = lineChart.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.TOP);
-        xAxis.setValueFormatter(new IAxisValueFormatter() {
-            @Override
-            public String getFormattedValue(float value, AxisBase axis) {
-                if (value >= 0 && value < valueList.size()) {
-                    return valueList.get((int) value) + "";
-                } else {
-                    return "";
-                }
-
-            }
-        });
-        xAxis.setDrawAxisLine(false);
-        xAxis.setDrawGridLines(false);
-        xAxis.setTextColor(Color.RED);
-        xAxis.setLabelCount(1, true);
-
-
+        xAxis.setEnabled(false);
+//        xAxis.setPosition(XAxis.XAxisPosition.TOP);
+//        xAxis.setValueFormatter(new IAxisValueFormatter() {
+//            @Override
+//            public String getFormattedValue(float value, AxisBase axis) {
+//                if (value >= 0 && value < valueList.size()) {
+//                    return valueList.get((int) value) + "";
+//                } else {
+//                    return "";
+//                }
+//
+//            }
+//        });
+//        xAxis.setDrawAxisLine(false);
+//        xAxis.setDrawGridLines(false);
+//        xAxis.setTextColor(Color.RED);
+//        xAxis.setLabelCount(1, true);
 
 
         lineDataSet = new LineDataSet(null, "");
@@ -159,7 +158,7 @@ public class LocationFragment extends BaseFragment {
         lineDataSet.setCircleColor(Color.RED);
         lineDataSet.setHighLightColor(Color.RED);
         //设置曲线填充
-        lineDataSet.setDrawValues(false);
+        lineDataSet.setDrawValues(true);
         lineDataSet.setDrawFilled(true);
         lineDataSet.setFillDrawable(ContextCompat.getDrawable(getActivity(), R.drawable.chart_fill));
         lineDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
@@ -203,6 +202,25 @@ public class LocationFragment extends BaseFragment {
 //            }
 //        });
 
+//        circleProgress.startAnim();
+//
+//
+//
+//        new MyCountDownTimer(50000, 1000) {
+//            @Override
+//            public void onTick(long millisUntilFinished) {
+//                int dbm = (int) (Math.random()*120);
+//                valueList.add(Integer.valueOf(dbm));
+//                addEntry(dbm);
+//                circleProgress.setValue("" + dbm);
+//                tvInductionHitCount.setText("命中" + valueList.size() + "次");
+//            }
+//
+//            @Override
+//            public void onFinish() {
+//
+//            }
+//        }.start();
     }
 
 
@@ -237,9 +255,13 @@ public class LocationFragment extends BaseFragment {
 
     }
 
+    /**
+     * 定位成功
+     */
     private void startLocation() {
         valueList.clear();
-        tvEnergyInfo.setText("0");
+        circleProgress.setValue("0");
+        circleProgress.startAnim();
         lineDataSet.clear();
         lineChart.clear();
         lineData.notifyDataChanged();
@@ -281,7 +303,7 @@ public class LocationFragment extends BaseFragment {
                     if (triggerTimes < CacheManager.timesArr[SPUtils.getInstance().getTriggerTimes()]) {
 
                         if (triggerList.size() < triggerTimes) {
-                            replyTimes = triggerTimes *2;
+                            replyTimes = triggerTimes * 2;
                             triggerList.add(false);
                             adapter.notifyDataSetChanged();
                             rvTriggerStatus.scrollToPosition(triggerList.size() - 1);
@@ -318,7 +340,6 @@ public class LocationFragment extends BaseFragment {
         }
 
     }
-
 
 
     private RadioGroup.OnCheckedChangeListener onCheckedChangeListener = new RadioGroup.OnCheckedChangeListener() {
@@ -359,7 +380,7 @@ public class LocationFragment extends BaseFragment {
 
             startLocation();
         } else if (MsgType.TRIGGER_SUCCESS.equals(result)) {
-            if (!startTrigger){
+            if (!startTrigger) {
                 return;
             }
 
@@ -377,7 +398,7 @@ public class LocationFragment extends BaseFragment {
             }
 
         } else if (MsgType.TRIGGER_FAIL.equals(result)) {
-            if (!startTrigger){
+            if (!startTrigger) {
                 return;
             }
 
@@ -403,9 +424,9 @@ public class LocationFragment extends BaseFragment {
         for (Short dbm : locationInfoBean.getDbm()) {
             valueList.add(Integer.valueOf(dbm));
             addEntry(dbm);
-            tvEnergyInfo.setText("" + dbm);
+            circleProgress.setValue("" + dbm);
 //            textToSpeech.speak(dbm+"", TextToSpeech.QUEUE_ADD, null);
-            tvInductionHitCount.setText("命中"+valueList.size()+"次");
+            tvInductionHitCount.setText("命中" + valueList.size() + "次");
 
         }
     }

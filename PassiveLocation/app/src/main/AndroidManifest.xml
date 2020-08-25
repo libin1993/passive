@@ -28,7 +28,7 @@
         <activity android:name=".ui.MainActivity">
 
         </activity>
-        <activity android:name=".ui.SplashActivity" >
+        <activity android:name=".ui.LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,9 +37,8 @@
         </activity>
         <activity android:name=".ui.InductionSettingActivity"/>
         <activity android:name=".ui.DetectSettingActivity"/>
-        <activity android:name=".ui.PhoneNumberManageActivity"/>
-        <activity android:name=".ui.LoginActivity" />
-        <activity android:name=".TestActivity" />
+        <activity android:name=".ui.TestActivity" />
+        <activity android:name=".ui.SplashActivity" />
         <activity android:name=".ui.NameListActivity" />
     </application>
 

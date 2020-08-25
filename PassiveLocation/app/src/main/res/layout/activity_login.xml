@@ -40,6 +40,7 @@
                 android:background="@null"
                 android:gravity="center"
                 android:hint="账号"
+                android:textColor="@android:color/white"
                 android:textColorHint="@color/gray_ee"
                 android:textSize="14sp"
                 android:singleLine="true"
@@ -72,6 +73,7 @@
                 android:textColorHint="@color/gray_ee"
                 android:textSize="14sp"
                 android:singleLine="true"
+                android:textColor="@android:color/white"
                 android:digits="@string/account_rule"
                 android:maxLength="10"
                 android:inputType="textPassword"/>

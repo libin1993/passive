@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,15 +14,18 @@ import com.synway.passive.location.base.BaseFragment;
 import com.synway.passive.location.ui.DetectSettingActivity;
 import com.synway.passive.location.ui.InductionSettingActivity;
 import com.synway.passive.location.ui.NameListActivity;
+import com.synway.passive.location.ui.TestActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.Unbinder;
 
 /**
  * Author：Libin on 2020/8/8 14:29
  * Email：1993911441@qq.com
- * Describe：设置 */
+ * Describe：设置
+ */
 public class SetFragment extends BaseFragment {
     @BindView(R.id.tvInductionSetting)
     TextView tvInductionSetting;
@@ -31,8 +33,11 @@ public class SetFragment extends BaseFragment {
     TextView tvDetectSetting;
     @BindView(R.id.tvManagePhoneNumberList)
     TextView tvManagePhoneNumberList;
+    @BindView(R.id.tvTitle)
+    TextView tvTitle;
 
     private Unbinder unbinder;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -48,29 +53,30 @@ public class SetFragment extends BaseFragment {
         initViews();
     }
 
-    public void initViews(){
+    public void initViews() {
         tvInductionSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), InductionSettingActivity.class);
-                getActivity().startActivity(intent);
+                startActivity(intent);
             }
         });
         tvDetectSetting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), DetectSettingActivity.class);
-                getActivity().startActivity(intent);
+                startActivity(intent);
             }
         });
         tvManagePhoneNumberList.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), NameListActivity.class);
-                getActivity().startActivity(intent);
+                startActivity(intent);
             }
         });
     }
+
     public static SetFragment newInstance() {
 
         Bundle args = new Bundle();
@@ -81,11 +87,14 @@ public class SetFragment extends BaseFragment {
     }
 
 
-
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         unbinder.unbind();
     }
 
+    @OnClick(R.id.tvTitle)
+    public void onViewClicked() {
+//        startActivity(new Intent(getActivity(), TestActivity.class));
+    }
 }

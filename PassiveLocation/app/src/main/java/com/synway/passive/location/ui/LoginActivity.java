@@ -8,12 +8,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.synway.passive.location.R;
-import com.synway.passive.location.TestActivity;
 import com.synway.passive.location.base.BaseActivity;
 import com.synway.passive.location.utils.SPUtils;
 import com.synway.passive.location.utils.ToastUtils;
-
-import org.apache.mina.proxy.utils.StringUtilities;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
