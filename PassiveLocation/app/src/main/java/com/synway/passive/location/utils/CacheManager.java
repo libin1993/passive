@@ -23,6 +23,8 @@ public class CacheManager {
 
     public static  boolean isLocation = false;
 
+    public static boolean is5G = false;
+
     public static String[] styleArr ={"制式一","制式二","制式三"};
     public static String[] vendorArr ={"移动","联通","电信"};
     public static Integer[] timesArr ={1,2,5,10,20,30};

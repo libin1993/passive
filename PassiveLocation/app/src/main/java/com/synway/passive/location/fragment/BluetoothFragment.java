@@ -230,10 +230,10 @@ public class BluetoothFragment extends BaseFragment {
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         unbinder.unbind();
         getParentFragment().getActivity().unregisterReceiver(bluetoothReceiver);
         EventBus.getDefault().unregister(this);
+        super.onDestroyView();
     }
 
 

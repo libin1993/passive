@@ -23,6 +23,9 @@ import android.widget.TextView;
 
 import com.chad.library.adapter.base.BaseQuickAdapter;
 import com.chad.library.adapter.base.BaseViewHolder;
+import com.hrst.sdk.HrstSdkCient;
+import com.hrst.sdk.callback.RequestCallBack;
+import com.hrst.sdk.dto.request.CellSearchRequest;
 import com.orhanobut.logger.Logger;
 import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseFragment;
@@ -36,6 +39,7 @@ import com.synway.passive.location.ui.NameListActivity;
 import com.synway.passive.location.utils.CacheManager;
 import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LoadingUtils;
+import com.synway.passive.location.utils.LogUtils;
 import com.synway.passive.location.utils.ToastUtils;
 import com.synway.passive.location.widget.DetectFailedDialog;
 import com.synway.passive.location.widget.MyCountDownTimer;
@@ -46,6 +50,7 @@ import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -268,7 +273,7 @@ public class PhoneInfoFragment extends BaseFragment {
     /**
      * 搜索小区
      */
-    private void searchCell(){
+    private void searchCell() {
         if (!BluetoothSocketUtils.getInstance().isConnected()) {
             ToastUtils.getInstance().showToast("请先连接蓝牙");
             return;
@@ -374,8 +379,37 @@ public class PhoneInfoFragment extends BaseFragment {
             SQLiteUtils.getInstance().insertNameList(nameBean);
         }
 
+        //5G
+        if (CacheManager.is5G) {
+            String imsi;
+            if (vendor == 1) {
+                imsi = "460000000000000";
+            } else if (vendor == 2) {
+                imsi = "460010000000000";
+            } else {
+                imsi = "460030000000000";
+            }
+            CellSearchRequest request = new CellSearchRequest();
+            request.setTargetImsi(imsi);
+            request.setTargetNumber(phoneNumber);
+            request.setVendor(vendor);
+            request.setSearchMode(searchMode);
+            List<Long> fcnList = new ArrayList<>();
+            for (int i : fcnArray) {
+                fcnList.add((long) i);
+            }
+            request.setFreqs(fcnList);
 
-        LteSendManager.searchCell(vendor, phoneNumber, fcnArray, "", "");
+            HrstSdkCient.startCellSearch(request, new RequestCallBack<Integer>() {
+                @Override
+                public void onAck(Integer integer) {
+                    LogUtils.log("搜索小区指令下发结果：" + integer);
+                }
+            });
+        } else {
+            LteSendManager.searchCell(vendor, phoneNumber, (byte) searchMode, fcnArray, "", "");
+        }
+
 
         myCountDownTimer = new MyCountDownTimer(15000, 1000) {
             @Override
@@ -403,17 +437,41 @@ public class PhoneInfoFragment extends BaseFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void searchResult(String result) {
         if (MsgType.SEARCH_SUCCESS.equals(result)) {
-            if (myCountDownTimer !=null){
+            if (myCountDownTimer != null) {
                 myCountDownTimer.cancel();
                 myCountDownTimer = null;
             }
 
             CellBean cellBean = CacheManager.getCell();
-            if (cellBean != null) {
-                LteSendManager.lockCell(cellBean.getCid(), cellBean.getFreq());
+            if (CacheManager.is5G){
+                long[] cidArr = new long[]{cellBean.getCid()};
+                long[] fcnArr = new long[]{cellBean.getFreq()};
+                HrstSdkCient.lockMonitorCells(cidArr, fcnArr, new RequestCallBack<Boolean>() {
+                    @Override
+                    public void onAck(Boolean aBoolean) {
+                        HrstSdkCient.startTargetLocaion(new RequestCallBack<Boolean>() {
+                            @Override
+                            public void onAck(Boolean aBoolean) {
+                                LoadingUtils.getInstance().dismiss();
+                                if (aBoolean) {
+                                    if (!CacheManager.isLocation) {
+                                        EventBus.getDefault().post(MsgType.LOCATION_SUCCESS);
+                                    }
+                                    CacheManager.isLocation = true;
+                                } else {
+                                    EventBus.getDefault().post(MsgType.LOCATION_FAIL);
+                                    CacheManager.isLocation = false;
+                                }
+                            }
+                        });
+                    }
+                });
             }else {
-                LteSendManager.sendData(MsgType.SEND_LOCATION_CMD);
+                LteSendManager.lockCell(cellBean.getCid(), cellBean.getFreq());
             }
+
+
+
 
         } else if (MsgType.RESEARCH_CELL.equals(result)) {
             searchCell();
@@ -454,7 +512,7 @@ public class PhoneInfoFragment extends BaseFragment {
                 searchCell();
                 break;
             case R.id.rl_root:
-                if (rvNumber.getVisibility() == View.VISIBLE){
+                if (rvNumber.getVisibility() == View.VISIBLE) {
                     rvNumber.setVisibility(View.GONE);
                 }
                 break;

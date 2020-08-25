@@ -4,9 +4,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.hrst.sdk.HrstSdkCient;
 import com.orhanobut.logger.Logger;
 import com.synway.passive.location.socket.LteSendManager;
 import com.synway.passive.location.socket.MsgType;
+import com.synway.passive.location.utils.CacheManager;
 import com.synway.passive.location.utils.LogUtils;
 
 import org.greenrobot.eventbus.EventBus;
@@ -26,7 +28,13 @@ public class SMSReceiver extends BroadcastReceiver {
         switch (action){
             case ACTION_SMS_SEND:
                 LogUtils.log("短信发送结果：发送成功");
-                LteSendManager.stopTrigger();
+                if (CacheManager.is5G){
+                    HrstSdkCient.sendTriggerEnd(0);
+                    EventBus.getDefault().post(MsgType.TRIGGER_SUCCESS);
+                }else {
+                    LteSendManager.stopTrigger();
+                }
+
                 break;
             case ACTION_SMS_DELIVERY:
                 LogUtils.log("短信发送结果：已接收");

@@ -5,9 +5,17 @@ import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
 import com.hrst.sdk.HrstSdkCient;
+import com.hrst.sdk.dto.report.CellInfosReport;
+import com.hrst.sdk.dto.report.LocationInfoReport;
+import com.hrst.sdk.dto.report.SysStatusReport;
 import com.synway.passive.location.bean.BluetoothStatus;
+import com.synway.passive.location.bean.CellBean;
 import com.synway.passive.location.bean.DeviceStatus;
+import com.synway.passive.location.bean.DeviceStatusBean;
+import com.synway.passive.location.bean.LocationInfoBean;
 import com.synway.passive.location.ui.MainActivity;
+import com.synway.passive.location.utils.CacheManager;
+import com.synway.passive.location.utils.FormatUtils;
 import com.synway.passive.location.utils.LoadingUtils;
 import com.synway.passive.location.utils.LogUtils;
 import com.synway.passive.location.utils.ToastUtils;
@@ -20,6 +28,9 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -58,7 +69,106 @@ public class BluetoothSocketUtils {
             return;
         }
 
-        SocketUtils.getInstance().connect();
+        if (CacheManager.is5G){
+            HrstSdkCient.registerReportListener(new HrstSdkCient.ReportListener() {
+                @Override
+                public void write(byte[] bytes) {
+                    sendData(bytes);
+                }
+
+                @Override
+                public void reportMcuLog(String s) {
+
+                }
+
+                @Override
+                public void reportSysStatus(SysStatusReport sysStatusReport) {
+                    if (CacheManager.is5G){
+                        DeviceStatusBean deviceStatus = new DeviceStatusBean();
+                        deviceStatus.setStatus((byte) sysStatusReport.getDeviceStatus());
+                        deviceStatus.setTemperatureDIG((byte) sysStatusReport.getTemperatureDig());
+                        deviceStatus.setTemperatureRF((byte) sysStatusReport.getTemperatureRf());
+                        deviceStatus.setElectricity((byte) sysStatusReport.getElectricity());
+                        deviceStatus.setMsg(sysStatusReport.getMsg());
+
+                        EventBus.getDefault().post(deviceStatus);
+                    }
+
+                }
+
+                @Override
+                public void reportUsbStauts(boolean b) {
+
+                }
+
+                @Override
+                public void reportSyncCellInfo(CellInfosReport cellInfosReport) {
+                    if (!CacheManager.is5G){
+                        return;
+                    }
+                    ArrayList<CellInfosReport.CellInfo> cellList = cellInfosReport.getList();
+                    if (cellList !=null && cellList.size() >0){
+                        for (CellInfosReport.CellInfo cellInfo : cellList) {
+                            CellBean cellBean = new CellBean();
+                            cellBean.setVendor((byte) cellInfo.getVendor());
+                            cellBean.setProtocol((byte) cellInfo.getProtocolType());
+                            cellBean.setFreq((int) cellInfo.getFreq());
+                            cellBean.setLac((int) cellInfo.getLac());
+                            cellBean.setCid((int) cellInfo.getCid());
+                            cellBean.setPci(cellInfo.getPci());
+                            cellBean.setDbm((short) cellInfo.getRxLevDbm());
+                            cellBean.setSnr((byte) cellInfo.getSnr());
+                            cellBean.setOffset(cellInfo.getOffset());
+                            cellBean.setStatus((byte) cellInfo.getCellStatusType());
+                            cellBean.setStateType((byte) cellInfo.getCellStateType());
+
+                            cellBean.setCellColorFlag((byte) 0);
+                            cellBean.setCellErrorRate((byte) cellInfo.getCellErrorRate());
+                            cellBean.setHit((byte) cellInfo.getHit());
+
+                            LogUtils.log("小区上报："+cellList.size()+":"+cellBean.toString());
+
+                            CacheManager.cellMap.put(cellBean.getLac()+","+cellBean.getCid(),cellBean);
+
+                            if (String.valueOf(cellBean.getLac()).equals(CacheManager.lac) &&  String.valueOf(cellBean.getCid()).equals(CacheManager.cid)){
+                                EventBus.getDefault().post(MsgType.SEARCH_SUCCESS);
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void reportLocationInfo(LocationInfoReport locationInfoReport) {
+                    if (!CacheManager.is5G){
+                        return;
+                    }
+                    LocationInfoBean locationBean = new LocationInfoBean();
+
+                    locationBean.setFreq((int) locationInfoReport.getTargetARFCN());
+                    locationBean.setLac((int) locationInfoReport.getTargetTAC());
+                    locationBean.setCid((int) locationInfoReport.getTargetCID());
+                    locationBean.setPowerOverFlow((byte) (locationInfoReport.isPowerOverFlow() ? 1:0));
+                    List<Short> dbmList = new ArrayList<>();
+                    dbmList.add((short) (locationInfoReport.getRxLevInDbm()+140));
+                    locationBean.setDbm(dbmList);
+                    locationBean.setColor((byte) locationInfoReport.getPowerIndicate());
+                    locationBean.setPci(locationInfoReport.getPci());
+
+                    EventBus.getDefault().post(locationBean);
+
+                    LogUtils.log("定位数据上报:"+locationBean.toString());
+                }
+
+                @Override
+                public void reportHeartBeat(boolean b, boolean b1) {
+
+                }
+            });
+        }else {
+            SocketUtils.getInstance().connect();
+        }
+
+
         this.bluetoothDevice = bluetoothDevice;
         new ClientThread().start();
     }
@@ -157,6 +267,8 @@ public class BluetoothSocketUtils {
                         if (MainActivity.sd != null) {
                             MainActivity.sd.rcvData(buf_data); // 数据扔过去库
                         }
+
+                        HrstSdkCient.readDeviceData(buf_data);
 
                     }
 

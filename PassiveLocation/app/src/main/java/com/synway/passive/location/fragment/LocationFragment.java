@@ -27,6 +27,8 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ViewPortHandler;
+import com.hrst.sdk.HrstSdkCient;
+import com.hrst.sdk.callback.RequestCallBack;
 import com.synway.passive.location.R;
 import com.synway.passive.location.base.BaseFragment;
 import com.synway.passive.location.bean.LocationInfoBean;
@@ -309,7 +311,13 @@ public class LocationFragment extends BaseFragment {
                             rvTriggerStatus.scrollToPosition(triggerList.size() - 1);
                         }
 
-                        LteSendManager.startTrigger();
+                        if (CacheManager.is5G){
+                            HrstSdkCient.sendTriggerStart(1,CacheManager.phoneNumber);
+                            EventBus.getDefault().post(MsgType.TRIGGER_SUCCESS);
+                        }else {
+                            LteSendManager.startTrigger();
+                        }
+
                         triggerTimes++;
 
                     }
@@ -366,7 +374,19 @@ public class LocationFragment extends BaseFragment {
                     break;
             }
 
-            LteSendManager.setPower(power);
+
+
+            if (CacheManager.is5G){
+                HrstSdkCient.setGainMode(power, new RequestCallBack<Boolean>() {
+                    @Override
+                    public void onAck(Boolean aBoolean) {
+
+                    }
+                });
+            }else {
+                LteSendManager.setPower(power);
+            }
+
         }
     };
 

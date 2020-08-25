@@ -34,7 +34,7 @@ public class LteSendManager {
      * @param lac
      * @param cid
      */
-    public static void searchCell(int vendor, String targetPhoneNumber, int[] fcns, String lac, String cid) {
+    public static void searchCell(int vendor, String targetPhoneNumber, byte searchMode,int[] fcns, String lac, String cid) {
         byte[] protocolBytes = new byte[]{(byte) 7};
         byte[] vendorBytes = new byte[]{(byte) vendor};
 
@@ -66,7 +66,7 @@ public class LteSendManager {
 
         byte[] thresholdBytes = FormatUtils.getInstance().hexStringToBytes("FF");
         byte[] mmecBytes = FormatUtils.getInstance().hexStringToBytes("FF");
-        byte[] searchModeBytes = new byte[]{0};
+        byte[] searchModeBytes = new byte[]{searchMode};
         byte[] freqNumBytes;
 
 

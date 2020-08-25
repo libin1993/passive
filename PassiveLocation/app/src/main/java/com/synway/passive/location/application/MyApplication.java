@@ -25,6 +25,7 @@ import com.orhanobut.logger.PrettyFormatStrategy;
 import com.synway.passive.location.bean.DaoMaster;
 import com.synway.passive.location.bean.DaoSession;
 import com.synway.passive.location.greendao.MyOpenHelper;
+import com.synway.passive.location.utils.FileUtils;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -57,14 +58,13 @@ public class MyApplication extends Application {
 
         initLogger();
 
-
+        HrstSdkCient.initialize(FileUtils.LOG_PATH);
 
     }
 
     private void initLogger() {
-        String diskPath = Environment.getExternalStorageDirectory().getAbsolutePath();
-        String folder = diskPath + File.separatorChar + "PassiveLocation/log";
-        HandlerThread ht = new HandlerThread("AndroidFileLogger." + folder);
+
+        HandlerThread ht = new HandlerThread("AndroidFileLogger." + FileUtils.LOG_PATH);
         ht.start();
         try {
             //通过反射实例化DiskLogStrategy中的内部类WriteHandler
@@ -73,7 +73,7 @@ public class MyApplication extends Application {
             //开启强制访问
             constructor.setAccessible(true);
             //核心：通过构造函数，传入相关属性，得到WriteHandler实例
-            Handler handler = (Handler) constructor.newInstance(ht.getLooper(), folder, 10000 * 1024);
+            Handler handler = (Handler) constructor.newInstance(ht.getLooper(), FileUtils.LOG_PATH, 10000 * 1024);
             //创建缓存策略
             FormatStrategy strategy = CsvFormatStrategy.newBuilder()
                     .logStrategy(new DiskLogStrategy(handler))
