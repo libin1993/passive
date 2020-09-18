@@ -2,6 +2,7 @@ package com.synway.passive.location.fragment;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -51,6 +52,7 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -93,7 +95,9 @@ public class LocationFragment extends BaseFragment {
 
     private MyCountDownTimer countDownTimer;
 
-//    private TextToSpeech textToSpeech;
+    private TextToSpeech textToSpeech;
+
+    private boolean isSupportChinese = false; //是否支持中文语音播报
 
     @Nullable
     @Override
@@ -189,25 +193,25 @@ public class LocationFragment extends BaseFragment {
         };
         rvTriggerStatus.setAdapter(adapter);
 
-//        textToSpeech = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
-//            @Override
-//            public void onInit(int status) {
-//                if (status == TextToSpeech.SUCCESS) {
-//                    textToSpeech.setPitch(1f);// 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
-//                    textToSpeech.setSpeechRate(1f);
-//                    int result = textToSpeech.setLanguage(Locale.CHINESE);
-//                    if (result == TextToSpeech.LANG_MISSING_DATA
-//                            || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-//                        LogUtils.log("不支持语音播报中文");
-//                    }
-//                }
-//            }
-//        });
+        textToSpeech = new TextToSpeech(getActivity(), new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS) {
+                    textToSpeech.setPitch(1f);// 设置音调，值越大声音越尖（女生），值越小则变成男声,1.0是常规
+                    textToSpeech.setSpeechRate(1f);
+                    int result = textToSpeech.setLanguage(Locale.CHINESE);
+                    if (result != TextToSpeech.LANG_MISSING_DATA
+                           && result != TextToSpeech.LANG_NOT_SUPPORTED) {
+                        isSupportChinese = true;
+                        LogUtils.log("支持语音播报中文");
+                    }
+                }
+            }
+        });
 
-//        circleProgress.startAnim();
-//
-//
-//
+
+
+
 //        new MyCountDownTimer(50000, 1000) {
 //            @Override
 //            public void onTick(long millisUntilFinished) {
@@ -216,6 +220,10 @@ public class LocationFragment extends BaseFragment {
 //                addEntry(dbm);
 //                circleProgress.setValue("" + dbm);
 //                tvInductionHitCount.setText("命中" + valueList.size() + "次");
+//
+//                if (isSupportChinese){
+//                    textToSpeech.speak(dbm+"", TextToSpeech.QUEUE_ADD, null,null);
+//                }
 //            }
 //
 //            @Override
@@ -223,6 +231,7 @@ public class LocationFragment extends BaseFragment {
 //
 //            }
 //        }.start();
+
     }
 
 
@@ -283,6 +292,12 @@ public class LocationFragment extends BaseFragment {
 
     @OnClick(R.id.bntStartInduction)
     public void onViewClicked() {
+        if (!BluetoothSocketUtils.getInstance().isConnected()) {
+            ToastUtils.getInstance().showToast("请先连接蓝牙");
+            return;
+        }
+
+
         if (!CacheManager.isLocation) {
             ToastUtils.getInstance().showToast("请先定位目标");
             return;
@@ -301,7 +316,6 @@ public class LocationFragment extends BaseFragment {
                     CacheManager.intervalArr[SPUtils.getInstance().getTriggerInterval()] * 1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
-                    LogUtils.log("时间：" + millisUntilFinished);
                     if (triggerTimes < CacheManager.timesArr[SPUtils.getInstance().getTriggerTimes()]) {
 
                         if (triggerList.size() < triggerTimes) {
@@ -380,7 +394,7 @@ public class LocationFragment extends BaseFragment {
                 HrstSdkCient.setGainMode(power, new RequestCallBack<Boolean>() {
                     @Override
                     public void onAck(Boolean aBoolean) {
-
+                        LogUtils.log("设置增益指令结果："+aBoolean);
                     }
                 });
             }else {
@@ -445,11 +459,16 @@ public class LocationFragment extends BaseFragment {
             valueList.add(Integer.valueOf(dbm));
             addEntry(dbm);
             circleProgress.setValue("" + dbm);
-//            textToSpeech.speak(dbm+"", TextToSpeech.QUEUE_ADD, null);
+
+            if (isSupportChinese){
+                textToSpeech.speak(dbm+"", TextToSpeech.QUEUE_ADD, null,null);
+            }
+
             tvInductionHitCount.setText("命中" + valueList.size() + "次");
 
         }
     }
+
 
 
     public static LocationFragment newInstance() {
@@ -470,3 +489,7 @@ public class LocationFragment extends BaseFragment {
     }
 
 }
+
+
+
+

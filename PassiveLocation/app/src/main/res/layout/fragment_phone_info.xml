@@ -120,7 +120,7 @@
                 android:inputType="number"
                 android:textSize="14sp"
                 android:hint="请输入目标LAC"
-                android:textColorHint="@color/gray_ee"/>
+                android:textColorHint="@color/gray_ee" />
 
         </LinearLayout>
         <LinearLayout
@@ -154,7 +154,7 @@
                 android:inputType="number"
                 android:textSize="14sp"
                 android:hint="请输入目标CID"
-                android:textColorHint="@color/gray_ee"/>
+                android:textColorHint="@color/gray_ee" />
 
 
         </LinearLayout>
@@ -252,7 +252,7 @@
                 android:textColorHint="@color/gray_ee"
                 android:gravity="center"
                 android:singleLine="true"
-                android:maxLength="5"
+                android:maxLength="6"
                 android:digits="@string/number_rule"/>
             <EditText
                 android:id="@+id/et_fcn2"
@@ -266,7 +266,7 @@
                 android:gravity="center"
                 android:layout_marginLeft="12dp"
                 android:singleLine="true"
-                android:maxLength="5"
+                android:maxLength="6"
                 android:digits="@string/number_rule"/>
             <EditText
                 android:id="@+id/et_fcn3"
@@ -281,7 +281,7 @@
                 android:layout_marginRight="15dp"
                 android:layout_marginLeft="12dp"
                 android:singleLine="true"
-                android:maxLength="5"
+                android:maxLength="6"
                 android:digits="@string/number_rule"/>
 
         </LinearLayout>

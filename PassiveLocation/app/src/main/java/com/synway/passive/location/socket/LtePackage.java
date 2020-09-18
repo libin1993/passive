@@ -13,7 +13,7 @@ public class LtePackage {
     private int dataLength;    //数据长度（消息内容部分）   4字节
     private short type;   //消息类型    2字节
     private byte[] crc = new byte[4];   //校验码     4字节
-    private byte[] deviceName = new byte[16];    //采集设备（板卡）编号  16字节
+    private byte[] deviceName = new byte[16];    //设备编号  16字节
     private byte[] gpsInfo = new byte[32];  //gps
     private byte[] reserve = new byte[16];  //预留字段   16字节
 

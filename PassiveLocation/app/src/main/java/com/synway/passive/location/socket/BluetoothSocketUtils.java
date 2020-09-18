@@ -2,9 +2,11 @@ package com.synway.passive.location.socket;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
 import android.util.Log;
 
 import com.hrst.sdk.HrstSdkCient;
+import com.hrst.sdk.callback.RequestCallBack;
 import com.hrst.sdk.dto.report.CellInfosReport;
 import com.hrst.sdk.dto.report.LocationInfoReport;
 import com.hrst.sdk.dto.report.SysStatusReport;
@@ -45,6 +47,8 @@ public class BluetoothSocketUtils {
 
     private final static int READ_TIME_OUT = 60000;  //超时时间
 
+    private static boolean syncTime = false;
+
 
     private BluetoothSocketUtils() {
 
@@ -70,6 +74,8 @@ public class BluetoothSocketUtils {
         }
 
         if (CacheManager.is5G){
+
+             syncTime = false;
             HrstSdkCient.registerReportListener(new HrstSdkCient.ReportListener() {
                 @Override
                 public void write(byte[] bytes) {
@@ -78,20 +84,23 @@ public class BluetoothSocketUtils {
 
                 @Override
                 public void reportMcuLog(String s) {
-
+                    LogUtils.log("mcuLog："+s);
                 }
 
                 @Override
                 public void reportSysStatus(SysStatusReport sysStatusReport) {
-                    if (CacheManager.is5G){
-                        DeviceStatusBean deviceStatus = new DeviceStatusBean();
-                        deviceStatus.setStatus((byte) sysStatusReport.getDeviceStatus());
-                        deviceStatus.setTemperatureDIG((byte) sysStatusReport.getTemperatureDig());
-                        deviceStatus.setTemperatureRF((byte) sysStatusReport.getTemperatureRf());
-                        deviceStatus.setElectricity((byte) sysStatusReport.getElectricity());
-                        deviceStatus.setMsg(sysStatusReport.getMsg());
+                    LogUtils.log("5G设备状态："+sysStatusReport.toString());
+                    DeviceStatusBean deviceStatus = new DeviceStatusBean();
+                    deviceStatus.setStatus((byte) sysStatusReport.getDeviceStatus());
+                    deviceStatus.setTemperatureDIG((byte) sysStatusReport.getTemperatureDig());
+                    deviceStatus.setTemperatureRF((byte) sysStatusReport.getTemperatureRf());
+                    deviceStatus.setElectricity((byte) sysStatusReport.getElectricity());
+                    deviceStatus.setMsg(sysStatusReport.getMsg());
 
-                        EventBus.getDefault().post(deviceStatus);
+                    EventBus.getDefault().post(deviceStatus);
+
+                    if (sysStatusReport.getDeviceStatus() != 16){
+                        ToastUtils.getInstance().showToast("设备状态异常，系统不能正常工作，请检查设备");
                     }
 
                 }
@@ -130,8 +139,14 @@ public class BluetoothSocketUtils {
 
                             CacheManager.cellMap.put(cellBean.getLac()+","+cellBean.getCid(),cellBean);
 
-                            if (String.valueOf(cellBean.getLac()).equals(CacheManager.lac) &&  String.valueOf(cellBean.getCid()).equals(CacheManager.cid)){
-                                EventBus.getDefault().post(MsgType.SEARCH_SUCCESS);
+                            if (String.valueOf(cellBean.getLac()).equals(CacheManager.lac) &&
+                                    String.valueOf(cellBean.getCid()).equals(CacheManager.cid)){
+
+                                if (!CacheManager.isSearchCell){
+                                    CacheManager.isSearchCell = true;
+                                    EventBus.getDefault().post(MsgType.SEARCH_SUCCESS);
+                                }
+
                             }
                         }
                     }
@@ -161,9 +176,42 @@ public class BluetoothSocketUtils {
 
                 @Override
                 public void reportHeartBeat(boolean b, boolean b1) {
+                    LogUtils.log("心跳:MCU:"+b+",DSP:"+b1);
+
+//                    HrstSdkCient.requestDspState(new RequestCallBack<Integer>() {
+//                        @Override
+//                        public void onAck(Integer integer) {
+//                            LogUtils.log("获取DSP状态:"+integer);
+//                        }
+//                    });
+//
+//                    if (!syncTime && b && b1){
+//                        HrstSdkCient.startSyncTime(new RequestCallBack<Boolean>() {
+//                            @Override
+//                            public void onAck(Boolean aBoolean) {
+//                                if (aBoolean){
+//                                    syncTime = true;
+//                                    ToastUtils.getInstance().showToast("同步时间成功");
+//                                }
+//                                LogUtils.log("同步时间结果:"+aBoolean);
+//                            }
+//                        });
+//                    }
 
                 }
             });
+
+//            HrstSdkCient.startSyncTime(new RequestCallBack<Boolean>() {
+//                @Override
+//                public void onAck(Boolean aBoolean) {
+//                    if (aBoolean){
+//                        syncTime = true;
+//                        ToastUtils.getInstance().showToast("同步时间成功");
+//                    }
+//                    LogUtils.log("同步时间结果:"+aBoolean);
+//                }
+//            });
+
         }else {
             SocketUtils.getInstance().connect();
         }
@@ -264,11 +312,14 @@ public class BluetoothSocketUtils {
                         for (int i = 0; i < bytes; i++){
                             buf_data[i] = buffer[i];
                         }
-                        if (MainActivity.sd != null) {
-                            MainActivity.sd.rcvData(buf_data); // 数据扔过去库
-                        }
 
-                        HrstSdkCient.readDeviceData(buf_data);
+                        if (CacheManager.is5G){
+                            HrstSdkCient.readDeviceData(buf_data);
+                        }else {
+                            if (MainActivity.sd != null) {
+                                MainActivity.sd.rcvData(buf_data); // 数据扔过去库
+                            }
+                        }
 
                     }
 

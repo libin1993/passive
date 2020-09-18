@@ -520,7 +520,7 @@ public class FormatUtils {
      * @param vendor 1:移动  2：联通 3：电信
      * @return 盲搜默认频点
      */
-    public int[] getDefaultFcn(int vendor) {
+    public int[] getDefaultFcn(boolean is5G,int vendor) {
         int[] fcnArray;
         switch (vendor) {
             case 2:
@@ -530,7 +530,12 @@ public class FormatUtils {
                 fcnArray = new int[]{1850, 100, 2452};
                 break;
             default:
-                fcnArray = new int[]{37900, 38400, 38950};
+                if (is5G){
+                    fcnArray = new int[]{513000};
+                }else {
+                    fcnArray = new int[]{37900, 38400, 38950};
+                }
+
                 break;
         }
 

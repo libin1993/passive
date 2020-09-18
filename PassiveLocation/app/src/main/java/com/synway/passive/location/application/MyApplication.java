@@ -25,6 +25,7 @@ import com.orhanobut.logger.PrettyFormatStrategy;
 import com.synway.passive.location.bean.DaoMaster;
 import com.synway.passive.location.bean.DaoSession;
 import com.synway.passive.location.greendao.MyOpenHelper;
+import com.synway.passive.location.utils.CacheManager;
 import com.synway.passive.location.utils.FileUtils;
 
 import java.io.File;
@@ -58,7 +59,9 @@ public class MyApplication extends Application {
 
         initLogger();
 
-        HrstSdkCient.initialize(FileUtils.LOG_PATH);
+        if (CacheManager.is5G){
+            HrstSdkCient.initialize(FileUtils.LOG_PATH);
+        }
 
     }
 
@@ -110,4 +113,3 @@ public class MyApplication extends Application {
         return mDaoSession;
     }
 }
-

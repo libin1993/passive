@@ -68,25 +68,4 @@ public class SQLiteUtils {
         return nameListBeanDao.queryBuilder().where(NameListBeanDao.Properties.Phone.like("%"+phone+"%")).list();
     }
 
-//    /**
-//     * 查询最新五条数据
-//     *
-//     * @return
-//     */
-//    public List<HistoryAddress> query(int installType) {
-//        return historyAddressDao.queryBuilder().where(HistoryAddressDao.Properties.User_id.eq(
-//                SPUtils.getInstance().getAccountId()),HistoryAddressDao.Properties.Install_type
-//                .eq(installType)).orderDesc(HistoryAddressDao.Properties.Id).limit(5).list();
-//    }
-//
-//    public HistoryAddress queryAddress(int communityId) {
-//        return historyAddressDao.queryBuilder().where(HistoryAddressDao.Properties.Community_id.eq(communityId),
-//                HistoryAddressDao.Properties.User_id.eq(SPUtils.getInstance().getAccountId())).unique();
-//    }
-//
-//
-//    public void delete(HistoryAddress historyAddress) {
-//        historyAddressDao.delete(historyAddress);
-//    }
-
 }

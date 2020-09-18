@@ -28,6 +28,7 @@ import com.synway.passive.location.fragment.SetFragment;
 import com.synway.passive.location.receiver.SMSReceiver;
 import com.synway.passive.location.socket.BluetoothSocketUtils;
 import com.synway.passive.location.socket.MsgType;
+import com.synway.passive.location.utils.CacheManager;
 import com.synway.passive.location.utils.LoadingUtils;
 import com.synway.passive.location.utils.OSUtils;
 import com.synway.passive.location.utils.ToastUtils;
@@ -90,7 +91,13 @@ public class MainActivity extends BaseActivity {
         registerReceiver(smsReceiver, intentFilter);
     }
 
+    /**
+     * 4G初始化sdk
+     */
     private void start() {
+        if (CacheManager.is5G){
+            return;
+        }
         // 数据转发对象
         sd = new BluetoothSD() {
             @Override

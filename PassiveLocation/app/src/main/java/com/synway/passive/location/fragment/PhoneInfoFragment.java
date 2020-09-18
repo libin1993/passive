@@ -301,6 +301,7 @@ public class PhoneInfoFragment extends BaseFragment {
         }
         CacheManager.cid = cid;
 
+        CacheManager.isSearchCell = false;
         CacheManager.isLocation = false;
 
         int vendor = tabLayoutStandard.getSelectedTabPosition() + 1;
@@ -309,7 +310,7 @@ public class PhoneInfoFragment extends BaseFragment {
         int searchMode = tabLayoutFcn.getSelectedTabPosition();
         int[] fcnArray;
         if (searchMode == 0) {
-            fcnArray = FormatUtils.getInstance().getDefaultFcn(vendor);
+            fcnArray = FormatUtils.getInstance().getDefaultFcn(CacheManager.is5G, vendor);
         } else {
             String fcn1 = etFcn1.getText().toString().trim();
             String fcn2 = etFcn2.getText().toString().trim();
@@ -392,13 +393,15 @@ public class PhoneInfoFragment extends BaseFragment {
             CellSearchRequest request = new CellSearchRequest();
             request.setTargetImsi(imsi);
             request.setTargetNumber(phoneNumber);
-            request.setVendor(vendor);
+            request.setVendor(vendor - 1);
             request.setSearchMode(searchMode);
             List<Long> fcnList = new ArrayList<>();
             for (int i : fcnArray) {
                 fcnList.add((long) i);
             }
             request.setFreqs(fcnList);
+
+            LogUtils.log(request.toString());
 
             HrstSdkCient.startCellSearch(request, new RequestCallBack<Integer>() {
                 @Override
@@ -443,15 +446,17 @@ public class PhoneInfoFragment extends BaseFragment {
             }
 
             CellBean cellBean = CacheManager.getCell();
-            if (CacheManager.is5G){
+            if (CacheManager.is5G) {
                 long[] cidArr = new long[]{cellBean.getCid()};
                 long[] fcnArr = new long[]{cellBean.getFreq()};
                 HrstSdkCient.lockMonitorCells(cidArr, fcnArr, new RequestCallBack<Boolean>() {
                     @Override
                     public void onAck(Boolean aBoolean) {
+                        LogUtils.log("锁定小区指令下发结果：" + aBoolean);
                         HrstSdkCient.startTargetLocaion(new RequestCallBack<Boolean>() {
                             @Override
                             public void onAck(Boolean aBoolean) {
+                                LogUtils.log("目标定位指令下发结果：" + aBoolean);
                                 LoadingUtils.getInstance().dismiss();
                                 if (aBoolean) {
                                     if (!CacheManager.isLocation) {
@@ -466,11 +471,9 @@ public class PhoneInfoFragment extends BaseFragment {
                         });
                     }
                 });
-            }else {
+            } else {
                 LteSendManager.lockCell(cellBean.getCid(), cellBean.getFreq());
             }
-
-
 
 
         } else if (MsgType.RESEARCH_CELL.equals(result)) {

@@ -44,6 +44,8 @@ public class CircleProgressView extends View {
     private String value = "0";  //值
     private Paint valuePaint;  //能量值paint
     private Paint tipPaint;    //能量信息paint
+    private Path bottomPath;
+    private Path topPath;
 
     public CircleProgressView(Context context) {
         super(context);
@@ -133,6 +135,9 @@ public class CircleProgressView extends View {
         tipPaint.setColor(Color.BLACK);
         tipPaint.setTextAlign(Paint.Align.CENTER);
         tipPaint.setTextSize(40);
+
+        topPath = new Path();
+        bottomPath = new Path();
     }
 
     @Override
@@ -148,12 +153,12 @@ public class CircleProgressView extends View {
 
         //底部圆环渐变
         SweepGradient bottomSweepGradient = new SweepGradient(gradientRectF.centerX(),
-                gradientRectF.centerY(), colors, new float[]{0f, 0.25f, 0.5f});
+                gradientRectF.centerY(), colors, new float[]{0.04167f, 0.25f, 0.45833f});
         bottomRingPaint.setShader(bottomSweepGradient);
 
         //上部圆环渐变
         SweepGradient topSweepGradient = new SweepGradient(gradientRectF.centerX(),
-                gradientRectF.centerY(), colors, new float[]{0.5f, 0.75f, 1f});
+                gradientRectF.centerY(), colors, new float[]{0.54167f, 0.75f, 0.95833f});
         topRingPaint.setShader(topSweepGradient);
     }
 
@@ -171,6 +176,7 @@ public class CircleProgressView extends View {
         canvas.save();
         //移动canvas
         canvas.translate(radius, radius);
+        canvas.rotate(1);
         //刻度线
         for (int i = 0; i < 180; i++) {
             canvas.drawLine(radius - 70, 0, radius - 20, 0, linePaint);
@@ -180,8 +186,8 @@ public class CircleProgressView extends View {
         canvas.restore();
 
         //遮罩圆环，覆盖渐变圆环
-        canvas.drawArc(gradientRectF, 14 + progress, 152 - progress, false, bottomMaskPaint);
-        canvas.drawArc(gradientRectF, 194 + progress, 152 - progress, false, topMaskPaint);
+        canvas.drawArc(gradientRectF, 15 + progress, 150 - progress, false, bottomMaskPaint);
+        canvas.drawArc(gradientRectF, 195 + progress, 150 - progress, false, topMaskPaint);
 
         //内部白色圆
         canvas.drawCircle(bgBlackRectF.centerX(), bgBlackRectF.centerY(), radius - 110, bgCirclePaint);
@@ -194,7 +200,8 @@ public class CircleProgressView extends View {
         //箭头角度
         double degree = Math.toDegrees(Math.asin(10f / (radius - 80))) / 2;
         //底部箭头，三角坐标
-        Path bottomPath = new Path();
+
+        bottomPath.reset();
         bottomPath.moveTo((float) (radius + (radius - 70) * Math.cos(Math.toRadians(progress + 15))),
                 (float) (radius + (radius - 70) * Math.sin(Math.toRadians(progress + 15))));// 此点为多边形的起点
         bottomPath.lineTo((float) (radius + (radius - 80) * Math.cos(Math.toRadians(progress - degree + 15))),
@@ -205,7 +212,8 @@ public class CircleProgressView extends View {
         canvas.drawPath(bottomPath, bottomArrowPaint);
 
         //上部箭头
-        Path topPath = new Path();
+
+        topPath.reset();
         topPath.moveTo((float) (radius + (radius - 70) * Math.cos(Math.toRadians(progress + 195))),
                 (float) (radius + (radius - 70) * Math.sin(Math.toRadians(progress + 195))));// 此点为多边形的起点
         topPath.lineTo((float) (radius + (radius - 80) * Math.cos(Math.toRadians(progress - degree + 195))),
@@ -234,7 +242,7 @@ public class CircleProgressView extends View {
         }
         mAnimator = ValueAnimator.ofInt(0, 150);
         mAnimator.setRepeatCount(-1);
-        mAnimator.setDuration(1700);
+        mAnimator.setDuration(2000);
         mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {

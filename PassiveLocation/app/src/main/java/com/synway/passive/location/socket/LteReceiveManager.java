@@ -82,7 +82,7 @@ public class LteReceiveManager {
 
     //解析成包数据
     private void parsePackageData(byte[] tempPackage) {
-        if (tempPackage.length < 82)
+        if (tempPackage.length < packageHeadLength)
             return;
 
 
@@ -275,7 +275,11 @@ public class LteReceiveManager {
             CacheManager.cellMap.put(cellBean.getLac()+","+cellBean.getCid(),cellBean);
 
             if (String.valueOf(cellBean.getLac()).equals(CacheManager.lac) &&  String.valueOf(cellBean.getCid()).equals(CacheManager.cid)){
-                EventBus.getDefault().post(MsgType.SEARCH_SUCCESS);
+                if (!CacheManager.isSearchCell){
+                    CacheManager.isSearchCell = true;
+                    EventBus.getDefault().post(MsgType.SEARCH_SUCCESS);
+                }
+
             }
 
         }
